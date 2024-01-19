@@ -1,2 +1,2 @@
 # caribou_multiamplicon
-Supporting material for manuscript on mountain caribou diet and microbiome.
+This repository contains supporting material for an in-preparation manuscript on the diet and gut microbiome of deep-snow mountain caribou in British Columbia. The R code required to reproduce all analyses and figures is currently available. Sample data and raw sequencing files will be made publicly available when the manuscript is under peer review, or upon reasonable request to the first author (ssugden@ualberta.ca).
