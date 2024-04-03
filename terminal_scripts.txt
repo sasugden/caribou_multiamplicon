@@ -1,0 +1,134 @@
+#######################################
+#### REMOVE PRIMERS FROM RAW READS ####
+#######################################
+
+### BACTERIA ###
+
+cd Bacteria-16S
+mkdir cutadapt
+
+for i in ~/caribou/sequences/Bacteria-16S/*_R1.fastq;
+do
+  SAMPLE=$(echo ${i} | sed "s/_R1.fastq//") 
+  echo ${SAMPLE}_R1.fastq ${SAMPLE}_R2.fastq
+  cutadapt -g GTGYCAGCMGCCGCGGTAA -G CCGYCAATTYMTTTRAGTTT --discard-untrimmed -o  ${SAMPLE}_cut_R1.fastq -p ${SAMPLE}_cut_R2.fastq  ${SAMPLE}_R1.fastq  ${SAMPLE}_R2.fastq 
+done
+
+### EUKARYOTES ###
+
+cd ~/caribou/sequences/Eukarya-18S
+mkdir cutadapt
+
+for i in ~/caribou/sequences/Eukarya-18S/*_R1.fastq;
+do
+  SAMPLE=$(echo ${i} | sed "s/_R1.fastq//") 
+  echo ${SAMPLE}_R1.fastq ${SAMPLE}_R2.fastq
+  cutadapt -g CCAGCASCYGCGGTAATTCC -G ACTTTCGTTCTTGATYRA --discard-untrimmed -o  ${SAMPLE}_cut_R1.fastq -p ${SAMPLE}_cut_R2.fastq  ${SAMPLE}_R1.fastq  ${SAMPLE}_R2.fastq 
+done
+
+### FUNGI ###
+
+cd ~/caribou/sequences/Fungal-ITS2
+mkdir cutadapt
+
+for i in ~/caribou/sequences/Fungal-ITS2/*_R1.fastq;
+do
+  SAMPLE=$(echo ${i} | sed "s/_R1.fastq//") 
+  echo ${SAMPLE}_R1.fastq ${SAMPLE}_R2.fastq
+  cutadapt -g GAACGCAGCRAANNGYGA -a GCATATCAATAAGCGGAGGA -G TCCTCCGCTTATTGATATGC -A TCRCNNTTYGCTGCGTTC --discard-untrimmed -o  ${SAMPLE}_cut_R1.fastq -p ${SAMPLE}_cut_R2.fastq  ${SAMPLE}_R1.fastq  ${SAMPLE}_R2.fastq 
+done
+
+### PLANT ###
+
+cd ~/caribou/sequences/Plant-ITS2
+mkdir cutadapt
+
+for i in ~/caribou/sequences/Plant-ITS2/*_R1.fastq;
+do
+  SAMPLE=$(echo ${i} | sed "s/_R1.fastq//") 
+  echo ${SAMPLE}_R1.fastq ${SAMPLE}_R2.fastq
+  cutadapt -g ATGCGATACTTGGTGTGAAT -a ATTGTAGTCTGGAGAAGCGTC -G GACGCTTCTCCAGACTACAAT -A ATTCACACCAAGTATCGCAT --discard-untrimmed -o  ${SAMPLE}_cut_R1.fastq -p ${SAMPLE}_cut_R2.fastq  ${SAMPLE}_R1.fastq  ${SAMPLE}_R2.fastq 
+done
+
+#########################################
+#### CLASSIFY 18S SEQUENCES IN QIIME ####
+#########################################
+
+# Import ASV sequences into QIIME
+qiime tools import --input-path original.18S.sequences.fna --output-path sequences.qza --type 'FeatureData[Sequence]'
+
+# Prepare SILVA taxonomy
+qiime feature-classifier extract-reads --i-sequences silva-138-99-seqs.qza --p-f-primer CCAGCASCYGCGGTAATTCC --p-r-primer ACTTTCGTTCTTGATYRA --p-min-length 100 --p-max-length 400 --o-reads ref-seqs.qza
+
+# Prepare the classifier
+qiime feature-classifier fit-classifier-naive-bayes --i-reference-reads ref-seqs.qza --i-reference-taxonomy silva-138-99-tax.cor.qza --o-classifier classifier.cut.seqs.corrected.tax.qza
+
+# Run the classifier 
+qiime feature-classifier classify-sklearn --i-classifier classifier.cut.seqs.corrected.tax.qza --i-reads sequences.qza --o-classification X18S_raw_taxonomy.tsv
+
+########################
+#### BLAST SEARCHES ####
+########################
+
+# BLAST of all plant sequences
+~/Downloads/ncbi-blast-2.10.0+/bin/blastn -query plant_seqs.fna -db nt -out PITS_blast_annotations.txt -outfmt "10 std sscinames stitle" -max_target_seqs 10 -remote
+
+# BLAST of sequences not assigned to the phylum level
+~/Downloads/ncbi-blast-2.10.0+/bin/blastn -query 16S_no_phylum.fna -db nt -out X16S_nophylum_blast.txt -outfmt "10 std sscinames stitle" -max_target_seqs 10 -remote
+
+~/Downloads/ncbi-blast-2.10.0+/bin/blastn -query 18S_no_phylum.fna -db nt -out 16S_nophylum_blast.txt -outfmt "10 std sscinames stitle" -max_target_seqs 10 -remote
+
+~/Downloads/ncbi-blast-2.10.0+/bin/blastn -query FITS_no_phylum.fna -db nt -out FITS_nophylum_blast.txt -outfmt "10 std sscinames stitle" -max_target_seqs 10 -remote
+
+################################
+#### MURIBACULACEAE GENOMES ####
+################################
+
+# Duncaniella dubosii
+datasets download genome accession GCF_004803915.1 --include gff3,rna,cds,protein,genome,seq-report
+
+# Duncaniella freteri
+datasets download genome accession GCF_004766125.1 --include gff3,rna,cds,protein,genome,seq-report
+
+# Duncaniella muris 
+datasets download genome accession GCF_003024805.1 --include gff3,rna,cds,protein,genome,seq-report
+
+# Duncaniella muricolitica 
+datasets download genome accession GCF_910574735.1 --include gff3,rna,cds,protein,genome,seq-report
+
+# Paramuribaculum intestinale
+datasets download genome accession GCF_003024815.1 --include gff3,rna,cds,protein,genome,seq-report
+
+# Muribaculum intestinale
+datasets download genome accession GCF_001688845.2 --include gff3,rna,cds,protein,genome,seq-report
+
+# Muribauclum gordoncarteri
+datasets download genome accession GCF_004803695.1 --include gff3,rna,cds,protein,genome,seq-report
+
+# Muribaculum caecicola
+datasets download genome accession GCF_004801635.1 --include gff3,rna,cds,protein,genome,seq-report
+
+# Mediterranea massiliensis
+datasets download genome accession GCF_900128475.1 --include gff3,rna,cds,protein,genome,seq-report
+
+# Phocaeicola vulgatus
+datasets download genome accession GCF_020885855.1 --include gff3,rna,cds,protein,genome,seq-report
+
+# Phocaeicola dorei
+datasets download genome accession GCF_902387545.1 --include gff3,rna,cds,protein,genome,seq-report
+
+
+run_dbcan ./GGCF_003024815.1_P_intestinale/GCF_003024815.1_ASM168884v2_genomic.fna prok --out_dir ./GCF_003024815.1_P_intestinale/fna_output
+
+run_dbcan ./GCF_001688845.2_M_intestinale/GCF_001688845.2_ASM168884v2_genomic.fna prok --out_dir ./GCF_001688845.2_M_intestinale/fna_output
+run_dbcan ./GCF_004803695.1_M_gordoncarteri/GCF_004803695.1_ASM480369v1_genomic.fna prok --out_dir ./GCF_004803695.1_M_gordoncarteri/fna_output
+run_dbcan ./GCF_004801635.1_M_caecicola/GCF_004801635.1_ASM480163v1_genomic.fna prok --out_dir ./GCF_004801635.1_M_caecicola/fna_output
+
+run_dbcan ./GCF_004803915.1_D_dubosii/GCF_004803915.1_ASM480391v1_genomic.fna prok --out_dir ./GCF_004803915.1_D_dubosii/fna_output
+run_dbcan ./GCF_004766125.1_D_freteri/GCF_004766125.1_ASM476612v1_genomic.fna prok --out_dir ./GCF_004766125.1_D_freteri/fna_output
+run_dbcan ./GCF_003024805.1_D_muris/GCF_003024805.1_ASM302480v1_genomic.fna prok --out_dir ./GCF_003024805.1_D_muris/fna_output
+run_dbcan ./GCF_910574735.1_D_muricolitica/GCF_910574735.1_MGBC000072_genomic.fna prok --out_dir ./GCF_910574735.1_D_muricolitica/fna_output
+
+run_dbcan ./GCF_020885855.1_P_vulgatus/GCF_020885855.1_ASM2088585v1_genomic.fna prok --out_dir ./GCF_020885855.1_P_vulgatus/fna_output
+run_dbcan ./GCF_902387545.1_P_dorei/GCF_902387545.1_UHGG_MGYG-HGUT-02478_genomic.fna prok --out_dir ./GCF_902387545.1_P_dorei/fna_output
+run_dbcan ./GCF_900128475.1_Med_massiliensis/GCF_900128475.1_PRJEB18047_genomic.fna prok --out_dir ./GCF_900128475.1_Med_massiliensis/fna_output
