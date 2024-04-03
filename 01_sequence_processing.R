@@ -151,7 +151,7 @@ organize_blast <- function(input_table){
 }
 
 # Import initial sample data
-sample_data <- read.csv("sample_data.csv", row.names="SampleID")
+sample_data <- read.csv("raw_data/sample_data.csv", row.names="SampleID")
 
 ###### INITIAL SEQUENCE IMPORT AND PROCESSING ########
 ## [1] Confirm that primers have been removed from all the reads. ####
@@ -285,9 +285,6 @@ for(i in c("X16S", "X18S", "FITS", "PITS")){
 ## [4] Remove chimeras ####
 # Examine the distribution of sequence lengths. Most sequences should be ~372bp.
 table(nchar(getSequences(seqtabAll[["X16S"]])))
-seqtab.bad <- seqtabAll[["16S"]][,nchar(colnames(seqtabAll[["16S"]])) < 369 | 
-                                    nchar(colnames(seqtabAll[["16S"]])) > 375]
-seqtabAll[["16S"]] <- seqtabAll[["16S"]][,nchar(colnames(seqtabAll[["16S"]])) %in% seq(369,375)]
 
 table(nchar(getSequences(seqtabAll[["X18S"]])))
 
@@ -320,14 +317,12 @@ for(i in c("X16S", "X18S", "FITS", "PITS")){
 }
 
 ###### ASSIGN AND CLEAN TAXONOMY #####
-taxtabNoC <- list()
-
 ## [1] Bacterial 16S ####
 # This was downloaded from https://benjjneb.github.io/dada2/training.html.
 fastaRef <- "~/Documents/z_taxonomy_databases/rdp_train_set_18.fa.gz"
 
 # Assign taxonomy to the sequence table.
-taxtabNoC[["16S"]] <- assignTaxonomy(seqtabNoC[["16S"]], refFasta=fastaRef, multithread=TRUE)
+taxtabNoC <- assignTaxonomy(seqtabNoC[["16S"]], refFasta=fastaRef, multithread=TRUE)
 
 # Check to see that it worked.
 unname(head(taxtabNoC[["16S"]]))
@@ -369,6 +364,19 @@ rowMeans(otu_table(archaea)) # All at extremely low abundances
 # Remove archaea from analysis
 pseq.16S.filter <- subset_taxa(pseq.16S.filter, !(Kingdom %in% c("Archaea")))
 
+# Remove sequences that are not in the correct length distribution.
+temp <- otu_table(pseq.16S.raw)
+table(nchar(getSequences(temp)))
+
+temp <- temp[,nchar(colnames(temp)) %in% seq(369,375)]
+pseq.16S.filter <- subset_taxa(pseq.16S.filter, taxa_names(pseq.16S.filter) %in% colnames(temp))
+rm(temp)
+
+# Create a list to start storing information about things that were removed from the data.
+ctrl_data <- list()
+ctrl_data$archaea <- archaea
+rm(archaea)
+
 # c - Remove taxa unclassified at the phylum level ####
 # Rename sequences to temp1, temp2, temp3... and count number of ASVs unclassified at kingdom level
 pseq.16S.filter <- rename_temp(pseq.16S.filter) # 0
@@ -401,6 +409,10 @@ nrow(nophylum.16S[[1]]) # representing 46 ASVs
 # Remove bacterial taxa that lack a phylum-level classification.
 pseq.16S.filter <- subset_taxa(pseq.16S.filter, is.na(Phylum)=="FALSE")
 
+ctrl_data$nophylum <- list()
+ctrl_data$nophylum$X16S <- nophylum.16S
+rm(nophylum.16S)
+
 ## [2] Eukaryotic 18S ####
 # a - Run taxonomic annotation separately in QIIME ####
 # Export sequences to assign taxonomy using the more updated QIIME database.
@@ -415,26 +427,26 @@ writeFasta(fasta, file = "original.18S.sequences.fna")
 # (run analysis in QIIME) #
 
 # b - Import and clean new taxonomy table ####
-tax.qiime.cut.corrected <- read.csv("qiime/taxonomy.cut.seqs.corrected.tax.tsv", sep="\t")
+tax.qiime.cut.corrected <- read.csv("intermediate_data/X18S_raw_taxonomy.tsv", sep="\t")
 tax.qiime.cut.corrected <- tidyr::separate(tax.qiime.cut.corrected,
                                            "Taxon",
                                            into=c("Kingdom","Phylum","Class","Order","Family","Genus","Species"),
                                            sep="; ")
 
-taxtabNoC[["X18S"]] <- tax.qiime.cut.corrected
-rownames(taxtabNoC[["X18S"]]) <- colnames(seqtabNoC[["X18S"]])
-taxtabNoC[["X18S"]]$Feature.ID <- NULL
-taxtabNoC[["X18S"]]$Confidence <- NULL
+taxtabNoC <- tax.qiime.cut.corrected
+rownames(taxtabNoC) <- colnames(seqtabNoC[["X18S"]])
+taxtabNoC$Feature.ID <- NULL
+taxtabNoC$Confidence <- NULL
 
 # Remove identifier prefixes
-taxtabNoC[["X18S"]] <- data.frame(lapply(taxtabNoC[["X18S"]], function(x) {gsub("d__", "", x)}))
-taxtabNoC[["X18S"]] <- data.frame(lapply(taxtabNoC[["X18S"]], function(x) {gsub("k__", "", x)}))
-taxtabNoC[["X18S"]] <- data.frame(lapply(taxtabNoC[["X18S"]], function(x) {gsub("p__", "", x)}))
-taxtabNoC[["X18S"]] <- data.frame(lapply(taxtabNoC[["X18S"]], function(x) {gsub("c__", "", x)}))
-taxtabNoC[["X18S"]] <- data.frame(lapply(taxtabNoC[["X18S"]], function(x) {gsub("o__", "", x)}))
-taxtabNoC[["X18S"]] <- data.frame(lapply(taxtabNoC[["X18S"]], function(x) {gsub("f__", "", x)}))
-taxtabNoC[["X18S"]] <- data.frame(lapply(taxtabNoC[["X18S"]], function(x) {gsub("g__", "", x)}))
-taxtabNoC[["X18S"]] <- data.frame(lapply(taxtabNoC[["X18S"]], function(x) {gsub("s__", "", x)}))
+taxtabNoC <- data.frame(lapply(taxtabNoC, function(x) {gsub("d__", "", x)}))
+taxtabNoC <- data.frame(lapply(taxtabNoC, function(x) {gsub("k__", "", x)}))
+taxtabNoC <- data.frame(lapply(taxtabNoC, function(x) {gsub("p__", "", x)}))
+taxtabNoC <- data.frame(lapply(taxtabNoC, function(x) {gsub("c__", "", x)}))
+taxtabNoC <- data.frame(lapply(taxtabNoC, function(x) {gsub("o__", "", x)}))
+taxtabNoC <- data.frame(lapply(taxtabNoC, function(x) {gsub("f__", "", x)}))
+taxtabNoC <- data.frame(lapply(taxtabNoC, function(x) {gsub("g__", "", x)}))
+taxtabNoC <- data.frame(lapply(taxtabNoC, function(x) {gsub("s__", "", x)}))
 
 # c - Clean some kingdom- and phylum-level identifications and import to phyloseq ####
 taxtabNoC$Kingdom <- as.character(taxtabNoC$Kingdom)
@@ -455,14 +467,14 @@ taxtabNoC$Kingdom[taxtabNoC$Phylum %in% c("Phragmoplastophyta")] <- "Plant"
 
 taxtabNoC$Phylum[taxtabNoC$Kingdom=="Eukaryota" & taxtabNoC$Phylum==""]
 
-df <- unique(taxtabNoC[,c("Kingdom","Phylum")])
+df <- unique(taxtabNoC$X18S[,c("Kingdom","Phylum")])
 df <- unique(taxtabNoC[,c("Kingdom","Phylum", "Class")])
 df <- subset(unique(taxtabNoC[,c("Kingdom","Phylum", "Class","Order","Family","Genus","Species")]),
              Kingdom=="Eukaryota")
 rm(df, tax.qiime.cut.corrected)
 
-rownames(taxtabNoC[["X18S"]]) <- colnames(seqtabNoC[["X18S"]])
-taxtabNoC[["X18S"]] <- as.matrix(taxtabNoC[["X18S"]])
+rownames(taxtabNoC) <- colnames(seqtabNoC[["X18S"]])
+taxtabNoC <- as.matrix(taxtabNoC)
 
 # Check to see that it worked.
 unname(head(taxtabNoC))
@@ -508,7 +520,7 @@ writeFasta(nophylum.18S[[2]], file="unclassified_seqs/nophylum_18S.fna")
 sum(nophylum.18S[[1]]$count)/sum(sample_sums(pseq.18S.filter)) # 18S = 4.77% of reads lack phylum classification
 
 # Load and organize BLAST results
-nophylum.18S[[3]] <- read.csv("unclassified_seqs/nophylum_18S_annotations.txt", header=FALSE,
+nophylum.18S[[3]] <- read.csv("intermediate_data/X18S_nophylum_blast.txt", header=FALSE,
                          col.names=c("qseqid", "sseqid", "pident", "length", "mismatch", "gapopen", 
                                      "qstart", "qend", "sstart", "send",
                                      "evalue", "bitscore", "staxids", "sscinames",
@@ -799,7 +811,7 @@ nophylum.18S_tbl <- dplyr::bind_rows(nophylum.18S_tbl)
 write.csv(nophylum.18S_tbl, "nophylum.18S.tbl.csv")
 
 # Manually inspect the CSV file to choose the best blast hit for each ASV.
-nophylum.18S_audit <- read.csv("unclassified_seqs/nophylum.18S_taxa_audited.csv")
+nophylum.18S_audit <- read.csv("intermediate_data/X18S_nophylum_audited.csv")
 
 orig.tax.table <- as.data.frame(cbind(tax_table(pseq.18S.filter)))
 orig.tax.table <- subset(orig.tax.table, !rownames(orig.tax.table) %in% nophylum.18S_audit$qseqid)
@@ -963,24 +975,24 @@ saveRDS(nophylum.18S, "pseq_objects/nophylum.18S.rds")
 fastaRef <- "~/Documents/z_taxonomy_databases/sh_general_release_2021.10.05.tgz"
 
 # Assign taxonomy to your sequence table.
-taxtabNoC[["FITS"]] <- assignTaxonomy(seqtabNoC[["FITS"]], refFasta=fastaRef, multithread=TRUE)
+taxtabNoC <- assignTaxonomy(seqtabNoC[["FITS"]], refFasta=fastaRef, multithread=TRUE)
 
 # Check to see that it worked.
 unname(head(taxtabNoC))
 
 # Remove underscore taxon level identifiers
-taxtabNoC[["FITS"]] <- as.data.frame(taxtabNoC[["FITS"]])
-taxtabNoC[["FITS"]]$seq <- rownames(taxtabNoC[["FITS"]])
-taxtabNoC[["FITS"]] <- data.frame(lapply(taxtabNoC[["FITS"]], function(x) {gsub("k__", "", x)}))
-taxtabNoC[["FITS"]] <- data.frame(lapply(taxtabNoC[["FITS"]], function(x) {gsub("p__", "", x)}))
-taxtabNoC[["FITS"]] <- data.frame(lapply(taxtabNoC[["FITS"]], function(x) {gsub("c__", "", x)}))
-taxtabNoC[["FITS"]] <- data.frame(lapply(taxtabNoC[["FITS"]], function(x) {gsub("o__", "", x)}))
-taxtabNoC[["FITS"]] <- data.frame(lapply(taxtabNoC[["FITS"]], function(x) {gsub("f__", "", x)}))
-taxtabNoC[["FITS"]] <- data.frame(lapply(taxtabNoC[["FITS"]], function(x) {gsub("g__", "", x)}))
-taxtabNoC[["FITS"]] <- data.frame(lapply(taxtabNoC[["FITS"]], function(x) {gsub("s__", "", x)}))
-rownames(taxtabNoC[["FITS"]]) <- taxtabNoC[["FITS"]]$seq
-taxtabNoC[["FITS"]]$seq <- NULL
-taxtabNoC[["FITS"]] <- as.matrix(taxtabNoC[["FITS"]])
+taxtabNoC <- as.data.frame(taxtabNoC)
+taxtabNoC$seq <- rownames(taxtabNoC)
+taxtabNoC <- data.frame(lapply(taxtabNoC, function(x) {gsub("k__", "", x)}))
+taxtabNoC <- data.frame(lapply(taxtabNoC, function(x) {gsub("p__", "", x)}))
+taxtabNoC <- data.frame(lapply(taxtabNoC, function(x) {gsub("c__", "", x)}))
+taxtabNoC <- data.frame(lapply(taxtabNoC, function(x) {gsub("o__", "", x)}))
+taxtabNoC <- data.frame(lapply(taxtabNoC, function(x) {gsub("f__", "", x)}))
+taxtabNoC <- data.frame(lapply(taxtabNoC, function(x) {gsub("g__", "", x)}))
+taxtabNoC <- data.frame(lapply(taxtabNoC, function(x) {gsub("s__", "", x)}))
+rownames(taxtabNoC) <- taxtabNoC$seq
+taxtabNoC$seq <- NULL
+taxtabNoC <- as.matrix(taxtabNoC)
 
 # Import initial sample data
 sample_data_temp <- subset(sample_data, rownames(sample_data) %in% rownames(seqtabNoC))
@@ -988,7 +1000,7 @@ sample_data_temp <- subset(sample_data, rownames(sample_data) %in% rownames(seqt
 # Import into phyloseq object and clean workspace
 pseq.FITS.raw <- phyloseq(otu_table(seqtabNoC, taxa_are_rows=FALSE),
                           sample_data(sample_data_temp),
-                          tax_table(taxtabNoC[["FITS"]]))
+                          tax_table(taxtabNoC))
 
 # b - Identify taxa not assigned at the phylum level ####
 pseq.FITS.filter <- pseq.FITS.raw
@@ -1012,8 +1024,8 @@ fasta <- ShortRead(sread = DNAStringSet(db_out$seqs), id = BStringSet(db_out$ids
 nophylum.FITS <- list(db_out, fasta)
 rm(db_out, fasta, ids, seqs, seqtab.nochim)
 
-write.csv(nophylum.FITS[[1]], "unclassified_seqs/nophylum_16s.csv") # n = 46
-writeFasta(nophylum.FITS[[2]], file="unclassified_seqs/nophylum_16S.fna")
+write.csv(nophylum.FITS[[1]], "unclassified_seqs/nophylum_FITS.csv") # n = 46
+writeFasta(nophylum.FITS[[2]], file="unclassified_seqs/nophylum_FITS.fna")
 
 # (BLAST search of the FASTA file - done remotely) #
 
@@ -1022,7 +1034,7 @@ sum(nophylum.FITS[[1]]$count)/sum(sample_sums(pseq.FITS.filter)) # 4.34% of read
 nrow(nophylum.FITS[[1]]) # representing 620 ASVs
 
 # c - Load and clean BLAST results ####
-nophylum.FITS[[3]] <- read.csv("unclassified_seqs/FITS_no_phylum_annotations.txt", header=FALSE,
+nophylum.FITS[[3]] <- read.csv("unclassified_seqs/FITS_nophylum_blast.txt", header=FALSE,
                          col.names=c("qseqid", "sseqid", "pident", "length", "mismatch", "gapopen", 
                                      "qstart", "qend", "sstart", "send",
                                      "evalue", "bitscore", "staxids", "sscinames",
@@ -1325,7 +1337,7 @@ writeFasta(fasta, file = "plant_seqs.fna")
 # Do the taxon analysis via BLAST in the terminal.
 
 # b - Import and clean BLAST results. ####
-plant_annotations <- read.csv("~/research_projects/caribou/plant_annotations.csv", header=FALSE,
+plant_annotations <- read.csv("intermediate_data/PITS_blast_annotations.csv", header=FALSE,
                               col.names=c("qseqid", "sseqid", "pident", "length", "mismatch", "gapopen", 
                                           "qstart", "qend", "sstart", "send",
                                           "evalue", "bitscore", "staxids", "sscinames",
@@ -1488,11 +1500,15 @@ rm(temp)
 
 ###### EXTRACTION BLANKS ####
 ## [1] Identify sequences that were present in the negative controls and their abundance in other samples ####
-pseq.raw.list <- list(pseq.16S.raw, pseq.18S.raw,
+pseq.raw <- list(pseq.16S.raw, pseq.18S.raw,
                       pseq.FITS.raw, pseq.PITS.raw)
 
 pseq.filter.list <- list(pseq.16S.filter, pseq.18S.filter,
                          pseq.FITS.filter, pseq.PITS.filter)
+
+rm(fnFs, fnRs, filtFs, filtRs, fastaRef, derepFs, derepRs,
+   dadaFs, dadaRs, errF, errR, seqtabAll, seqtabNoC,
+   pseq.16S.raw, pseq.18S.raw, pseq.FITS.raw, pseq.PITS.rawr)
 
 ctrl_data <- list()
 ctrl_data$extraction.blanks <- list()
@@ -1502,13 +1518,14 @@ for (i in c(1:2)){ # The negative controls were removed from the FITS and PITS d
   temp <- transform_sample_counts(pseq.filter.list[[i]], function(x) 100*x/sum(x))
   
   pseq.neg.ctrl <- subset_samples(temp, sample_names(pseq.filter.list[[i]]) %in% c("K1-NC", "NC-K2"))
+  pseq.neg.ctrl <- subset_taxa(pseq.neg.ctrl, Class !="Mammalia")
   pseq.neg.ctrl <- prune_taxa(taxa_sums(pseq.neg.ctrl) > 0, pseq.neg.ctrl)
   
   # Save a data frame with the taxonomy information for the negative controls
   ctrl_data$extraction.blanks[[i]] <- list()
   ctrl_data$extraction.blanks[[i]]$tax_table <- as.data.frame(cbind(tax_table(pseq.neg.ctrl)))
   
-  bad_pseq <- subset_taxa(temp, taxa_names(temp) %in% rownames(ctrls.neg[[i]][[1]]))
+  bad_pseq <- subset_taxa(temp, taxa_names(temp) %in% rownames(ctrl_data$extraction.blanks[[i]][[1]]))
   
   otu <- as.data.frame(otu_table(bad_pseq))
   otu <- merge(sample_data, otu, by=0, all=TRUE)
@@ -1536,7 +1553,7 @@ pseq.18S.filter <- subset_samples(pseq.18S.filter, !(sample_names(pseq.18S.filte
 ctrl_data$mock.commmunity <- list()
 ctrl_data$mock.community$pseq.objects <- list(
   X16S = subset_samples(pseq.16S.filter, sample_names(pseq.16S.filter)=="MOCK"),
-  X18S = subset_samples(pseq.18S.filter, sample_names(pseq.18S.filter)=="MOCK"),
+  # 18S not included because the mock community is not designed for these primers.
   FITS = subset_samples(pseq.FITS.filter, sample_names(pseq.FITS.filter)=="MOCK")
   # PITS not included because its mock community has no reads.
 )
@@ -1661,12 +1678,12 @@ temp.df <- rbind(temp.df,
                    seqs = refseq(ctrl_data$mock.community$pseq.objects$FITS)))
 
 fasta <- ShortRead(sread = DNAStringSet(temp.df$seqs), id = BStringSet(temp.df$taxid))
-writeFasta(fasta, file = "~/research_projects/caribou/zymo_mock_comm_seqs/ssrRNAs/mock_comm_16S_pool.fasta")
+writeFasta(fasta, file = "mock_comm_16S_pool.fasta")
 
 # cat *.fasta > for_alignment.fasta
 # mafft --treeout for_alignment.fasta > aligned.fasta
 
-tree <- ggtree::read.tree("~/research_projects/caribou/zymo_mock_comm_seqs/ssrRNAs/for_alignment.fasta.tree")
+tree <- ggtree::read.tree("for_alignment.fasta.tree")
 
 mock.tree <- ggtree(tree) + 
   geom_tiplab(size=3) + 
@@ -1680,37 +1697,37 @@ rm(tree, fasta, temp.df)
 ###### CLEAN REMAINING ANALYSIS OBJECTS ####
 ## [1] Examine read count distribution and sample completeness ####
 # Create a single data frame showing the number of reads for every sample/amplicon pair.
-read_counts.final <- transform(merge(as.data.frame(sample_sums(pseq.16S.final)), as.data.frame(sample_sums(pseq.18S.final)),
+read_counts.final <- transform(merge(as.data.frame(sample_sums(pseq.16S.filter)), as.data.frame(sample_sums(pseq.18S.filter)),
                                      by=0,all=TRUE),
                                row.names=Row.names, Row.names=NULL)
-read_counts.final <- transform(merge(read_counts.final, as.data.frame(sample_sums(pseq.FITS.final)),
+read_counts.final <- transform(merge(read_counts.final, as.data.frame(sample_sums(pseq.FITS.filter)),
                                      by=0,all=TRUE),
                                row.names=Row.names, Row.names=NULL)
-read_counts.final <- transform(merge(read_counts.final, as.data.frame(sample_sums(pseq.PITS.final)),
+read_counts.final <- transform(merge(read_counts.final, as.data.frame(sample_sums(pseq.PITS.filter)),
                                      by=0,all=TRUE),
                                row.names=Row.names, Row.names=NULL)
 colnames(read_counts.final) <- c("X16S", "X18S", "FITS", "PITS")
 
 # Calculate sample completeness for every sample/amplicon pair
-iNext.outputs.2 <- list(
-  X16S = iNEXT::iNEXT(as.data.frame(t(otu_table(pseq.16S.final))), q=0, datatype="abundance"),
-  X18S = iNEXT::iNEXT(as.data.frame(t(otu_table(pseq.18S.final))), q=0, datatype="abundance"),
-  FITS = iNEXT::iNEXT(as.data.frame(t(otu_table(pseq.FITS.final))), q=0, datatype="abundance"),
-  PITS = iNEXT::iNEXT(as.data.frame(t(otu_table(pseq.PITS.final))), q=0, datatype="abundance")
+iNext.output <- list(
+  X16S = iNEXT::iNEXT(as.data.frame(t(otu_table(pseq.16S.filter))), q=0, datatype="abundance"),
+  X18S = iNEXT::iNEXT(as.data.frame(t(otu_table(pseq.18S.filter))), q=0, datatype="abundance"),
+  FITS = iNEXT::iNEXT(as.data.frame(t(otu_table(pseq.FITS.filter))), q=0, datatype="abundance"),
+  PITS = iNEXT::iNEXT(as.data.frame(t(otu_table(pseq.PITS.filter))), q=0, datatype="abundance")
 )
 
 # Rename to "observed" (richness) and "SC" (sample completeness)
 for(i in c(1:4)){
-  rownames(iNext.outputs.2[[i]]$DataInfo) <- iNext.outputs.2[[i]]$DataInfo$site
-  if(i==1){colnames(iNext.outputs.2[[i]]$DataInfo)[c(3:4)] <- c("Obs.16S", "SC.16S")}
-  if(i==2){colnames(iNext.outputs.2[[i]]$DataInfo)[c(3:4)] <- c("Obs.18S", "SC.18S")}
-  if(i==3){colnames(iNext.outputs.2[[i]]$DataInfo)[c(3:4)] <- c("Obs.FITS", "SC.FITS")}
-  if(i==4){colnames(iNext.outputs.2[[i]]$DataInfo)[c(3:4)] <- c("Obs.PITS", "SC.PITS")}
+  rownames(iNext.output[[i]]$DataInfo) <- iNext.output[[i]]$DataInfo$site
+  if(i==1){colnames(iNext.output[[i]]$DataInfo)[c(3:4)] <- c("Obs.16S", "SC.16S")}
+  if(i==2){colnames(iNext.output[[i]]$DataInfo)[c(3:4)] <- c("Obs.18S", "SC.18S")}
+  if(i==3){colnames(iNext.output[[i]]$DataInfo)[c(3:4)] <- c("Obs.FITS", "SC.FITS")}
+  if(i==4){colnames(iNext.output[[i]]$DataInfo)[c(3:4)] <- c("Obs.PITS", "SC.PITS")}
 }
 
 # Add species richness and sample completeness information to the read counts object
 for(i in c(1:4)){
-  read_counts.final <- transform(merge(read_counts.final, iNext.outputs.2[[i]]$DataInfo[,c(3:4)],
+  read_counts.final <- transform(merge(read_counts.final, iNext.output[[i]]$DataInfo[,c(3:4)],
                                        by=0,all=TRUE),
                                  row.names=Row.names, Row.names=NULL)
 }
@@ -1725,47 +1742,47 @@ ggplot(read_counts.melt, aes(x=value)) +
 rm(read_counts.melt)
 
 ## [2] Remove samples that produced fewer than 2000 reads. ####
-pseq.16S.final <- subset_samples(pseq.16S.final, sample_sums(pseq.16S.final) > 2000) # Removes 1 low-read sample
-pseq.16S.final <- prune_taxa(taxa_sums(pseq.16S.final) > 0, pseq.16S.final)
+pseq.16S.filter <- subset_samples(pseq.16S.filter, sample_sums(pseq.16S.filter) > 2000) # Removes 1 low-read sample
+pseq.16S.filter <- prune_taxa(taxa_sums(pseq.16S.filter) > 0, pseq.16S.filter)
 
 # Save the PITS low-read samples just for interest.
-PITS.low.read.samples <- subset_samples(pseq.PITS.final, sample_sums(pseq.PITS.final) < 200)
+PITS.low.read.samples <- subset_samples(pseq.PITS.filter, sample_sums(pseq.PITS.filter) < 200)
 PITS.low.read.samples <- prune_taxa(taxa_sums(PITS.low.read.samples) > 0, PITS.low.read.samples)
 
 PITS.low.read.samples <- merge(as.data.frame(t(otu_table(PITS.low.read.samples))),
                                as.data.frame(cbind(tax_table(PITS.low.read.samples))),
                                by=0, all=TRUE)
 
-pseq.PITS.final <- subset_samples(pseq.PITS.final, sample_sums(pseq.PITS.final) > 10000) # Removes 4 low-read samples
-pseq.PITS.final <- prune_taxa(taxa_sums(pseq.PITS.final) > 0, pseq.PITS.final)
-PITS.low.read.samples$unique <- !PITS.low.read.samples$Row.names %in% taxa_names(pseq.PITS.final)
+pseq.PITS.filter <- subset_samples(pseq.PITS.filter, sample_sums(pseq.PITS.filter) > 10000) # Removes 4 low-read samples
+pseq.PITS.filter <- prune_taxa(taxa_sums(pseq.PITS.filter) > 0, pseq.PITS.filter)
+PITS.low.read.samples$unique <- !PITS.low.read.samples$Row.names %in% taxa_names(pseq.PITS.filter)
 
 ## [3] Remove low-abundance taxa (including singletons) ####
 # Calculate the number of low-abundance taxa
-ntaxa(pseq.16S.final) # 11679 total
-ntaxa(prune_taxa(taxa_sums(pseq.16S.final)==1, pseq.16S.final)) # 2952 singletons
-x1 <- transform_sample_counts(pseq.16S.final, function(x) 100*x/sum(x))
+ntaxa(pseq.16S.filter) # 11679 total
+ntaxa(prune_taxa(taxa_sums(pseq.16S.filter)==1, pseq.16S.filter)) # 2952 singletons
+x1 <- transform_sample_counts(pseq.16S.filter, function(x) 100*x/sum(x))
 ntaxa(filter_taxa(x1, function(x) mean(x) < 0.001, TRUE)) # 6362 taxa with mean relative abundance < 0.001
 mean(sample_sums(filter_taxa(x1, function(x) mean(x) < 0.001, TRUE))) # averaging 1.515% of each sample
 sd(sample_sums(filter_taxa(x1, function(x) mean(x) < 0.001, TRUE))) # +/- 1.306% of each sample
 
-ntaxa(pseq.18S.final) # 3534 total
-ntaxa(prune_taxa(taxa_sums(pseq.18S.final)==1, pseq.18S.final)) # 1208 singletons
-x1 <- transform_sample_counts(pseq.18S.final, function(x) 100*x/sum(x))
+ntaxa(pseq.18S.filter) # 3534 total
+ntaxa(prune_taxa(taxa_sums(pseq.18S.filter)==1, pseq.18S.filter)) # 1208 singletons
+x1 <- transform_sample_counts(pseq.18S.filter, function(x) 100*x/sum(x))
 ntaxa(filter_taxa(x1, function(x) mean(x) < 0.001, TRUE)) # 2159 taxa with mean relative abundance < 0.001
 mean(sample_sums(filter_taxa(x1, function(x) mean(x) < 0.001, TRUE))) # averaging 0.442% of each sample
 sd(sample_sums(filter_taxa(x1, function(x) mean(x) < 0.001, TRUE))) # +/- 0.380% of each sample
 
-ntaxa(pseq.FITS.final) # 4635 total
-ntaxa(prune_taxa(taxa_sums(pseq.FITS.final)==1, pseq.FITS.final)) # 36 singletons
-x1 <- transform_sample_counts(pseq.FITS.final, function(x) 100*x/sum(x))
+ntaxa(pseq.FITS.filter) # 4635 total
+ntaxa(prune_taxa(taxa_sums(pseq.FITS.filter)==1, pseq.FITS.filter)) # 36 singletons
+x1 <- transform_sample_counts(pseq.FITS.filter, function(x) 100*x/sum(x))
 ntaxa(filter_taxa(x1, function(x) mean(x) < 0.001, TRUE)) # 1573 taxa with mean relative abundance < 0.001
 mean(sample_sums(filter_taxa(x1, function(x) mean(x) < 0.001, TRUE))) # averaging 0.803% of each sample
 sd(sample_sums(filter_taxa(x1, function(x) mean(x) < 0.001, TRUE))) # +/- 0.704% of each sample
 
-ntaxa(pseq.PITS.final) # 1228 total
-ntaxa(prune_taxa(taxa_sums(pseq.PITS.final)==1, pseq.PITS.final)) # 199 singletons
-x1 <- transform_sample_counts(pseq.PITS.final, function(x) 100*x/sum(x))
+ntaxa(pseq.PITS.filter) # 1228 total
+ntaxa(prune_taxa(taxa_sums(pseq.PITS.filter)==1, pseq.PITS.filter)) # 199 singletons
+x1 <- transform_sample_counts(pseq.PITS.filter, function(x) 100*x/sum(x))
 ntaxa(filter_taxa(x1, function(x) mean(x) < 0.001, TRUE)) # 359 taxa with mean relative abundance < 0.001
 mean(sample_sums(filter_taxa(x1, function(x) mean(x) < 0.001, TRUE))) # averaging 0.405% of each sample
 sd(sample_sums(filter_taxa(x1, function(x) mean(x) < 0.001, TRUE))) # +/- 0.0737% of each sample
@@ -1773,7 +1790,7 @@ sd(sample_sums(filter_taxa(x1, function(x) mean(x) < 0.001, TRUE))) # +/- 0.0737
 rm(x1)
 
 # Remove low-abundance taxa from analysis
-pseq.temp <- list(pseq.16S.final, pseq.18S.final, pseq.FITS.final, pseq.PITS.final)
+pseq.temp <- list(pseq.16S.filter, pseq.18S.filter, pseq.FITS.filter, pseq.PITS.filter)
 
 pseq.post.trim.list <- list()
 
@@ -1792,34 +1809,15 @@ for(i in c(1:4)){
 
 rm(pseq.temp)
 
-pseq.post.trim.list[[1]]
-sample_sums(pseq.post.trim.list[[1]])
-
-pseq.post.trim.list[[2]]
-sample_sums(pseq.post.trim.list[[2]])
-
-pseq.post.trim.list[[3]]
-sample_sums(pseq.post.trim.list[[3]])
-
-pseq.post.trim.list[[4]]
-sample_sums(pseq.post.trim.list[[4]])
-
-pseq.final <- list(pseq.16S.final, pseq.18S.final, pseq.FITS.final, pseq.PITS.final)
-rm(pseq.16S.final, pseq.18S.final, pseq.FITS.final, pseq.PITS.final)
-names(pseq.final) <- c("X16S", "X18S", "FITS", "PITS")
-
-pseq.rchiv <- list(pseq.raw, pseq.filter, pseq.final)
-names(pseq.rchiv) <- c("raw", "clean", "post.controls")
-rm(pseq.raw, pseq.filter, pseq.final)
-
 ## [4] Rarefaction ####
 taxa_names(pseq.post.trim.list[[1]]) <- paste0("ASV-16S-", seq(1:ntaxa(pseq.post.trim.list[[1]])))
 taxa_names(pseq.post.trim.list[[2]]) <- paste0("ASV-18S-", seq(1:ntaxa(pseq.post.trim.list[[2]])))
 taxa_names(pseq.post.trim.list[[3]]) <- paste0("ASV-FITS-", seq(1:ntaxa(pseq.post.trim.list[[3]])))
 taxa_names(pseq.post.trim.list[[4]]) <- paste0("ASV-PITS-", seq(1:ntaxa(pseq.post.trim.list[[4]])))
 
-pseq.rarefied <- pseq.post.trim.list
 pseq.clr <- pseq.post.trim.list
+pseq.rarefied <- pseq.post.trim.list
+rm(pseq.post.trim.list)
 
 for(p in c(1:4)){
   rarefaction.average <- list()
@@ -1847,9 +1845,9 @@ for(p in c(1:4)){
 library(DECIPHER)
 library(phangorn)
 
-pseq.temp.list <- list(pseq.clr[[4]], pseq.rarefied[[4]])
+pseq.temp.list <- pseq.clr # Repeat with pseq.rarefied... just takes too much memory if I do them all at once.
 
-for(i in c(1:2)){
+for(i in c(1:4)){
   vector <- taxa_names(pseq.temp.list[[i]])
   taxa_names(pseq.temp.list[[i]]) <- refseq(pseq.temp.list[[i]])
   seqtabNoC <- as.matrix(as.data.frame(otu_table(pseq.temp.list[[i]])))
@@ -1870,8 +1868,7 @@ for(i in c(1:2)){
   rm(fitGTR, fit, treeNJ, dm, phangAlign, alignment, seqs, seqtabNoC, vector)
 }
 
-pseq.clr[[2]] <- pseq.temp.list[[1]]
-pseq.rarefied[[2]] <- pseq.temp.list[[2]]
+pseq.clr <- pseq.temp.list # Replace with pseq.rarefied afterwards
 rm(pseq.temp.list)
 
 # Check to make sure the phylogenetic trees are reasonably accurate.
@@ -1881,33 +1878,6 @@ head(tax_table(subset))
 taxa_names(subset) <- paste0(tax_table(subset)[,6], seq(c(1:50)))
 
 plot_tree(subset, nodelabf=nodeplotblank, "treeonly", label.tips="taxa_names", ladderize="left")
-
-rm(subset)
-
-ctrl_data <- list(
-  archaea = archaea,
-  duplicate.pseqs = ctrls.duplicate,
-  duplicate.pseqs.sub = ctrls.duplicate.sub,
-  duplicate.asv.overlap = ctrl.asv.overlap,
-  duplicate.adiv.table = ctrls.duplicate.adiv,
-  duplicate.bdiv.results = ctrl.replicate.data,
-  mock.pseqs = ctrls.mock.comm,
-  mock.summary = ctrls.mock.comm.summary,
-  blanks = ctrls.neg)
-
-rm(archaea, ctrls.duplicate, ctrls.duplicate.sub, ctrl.asv.overlap, ctrls.duplicate.adiv,
-   ctrl.replicate.data, ctrls.mock.comm, ctrls.mock.comm.summary, ctrls.neg)
-
-pseq_rchiv <- list(
-  raw = pseq.raw,
-  filter = pseq.filter,
-  before.abundance.filter = pseq.final,
-  after.abundance.filter = pseq.good.list
-)
-
-rm(pseq.raw, pseq.filter, pseq.final, pseq.good.list)
-
-rm(read_counts.melt, temp, temp_data)
 
 ## [6] Add guild information for the fungal taxa ####
 devtools::install_github("brendanf/FUNGuildR")
@@ -1939,7 +1909,8 @@ rm(db, taxtabNoC)
 # Change Dothiorella to Lichenoconium, but only for ASVs that BLAST as Lichenoconium.
 # I only did this after I had named ASVs, so to ensure the code runs correctly, this code appears here
 # rather than earlier, where the rest of the taxonomic cleaning was done.
-tax.tab.fungi <- as.data.frame(cbind(tax_table(pseq.rarefied.sub$FITS)))
+# Once for rarefied data
+tax.tab.fungi <- as.data.frame(cbind(tax_table(pseq.rarefied$FITS)))
 
 temp <- subset(tax.tab.fungi, Genus=="Dothiorella")
 temp <- subset(temp, !(rownames(temp) %in% c("ASV-FITS-194", "ASV-FITS-740")))
@@ -1951,4 +1922,19 @@ tax.tab.fungi$Phylum[tax.tab.fungi$Genus=="Lichenoconium"] <- "Ascomycota"
 tax.tab.fungi$Species[tax.tab.fungi$Genus=="Lichenoconium"] <- NA
 
 tax.tab.fungi <- as.matrix(tax.tab.fungi)
-tax_table(pseq.rarefied.sub$FITS) <- tax.tab.fungi
+tax_table(pseq.rarefied$FITS) <- tax.tab.fungi
+
+# Repeat for CLR data
+tax.tab.fungi <- as.data.frame(cbind(tax_table(pseq.clr$FITS)))
+
+temp <- subset(tax.tab.fungi, Genus=="Dothiorella")
+temp <- subset(temp, !(rownames(temp) %in% c("ASV-FITS-194", "ASV-FITS-740")))
+tax.tab.fungi$Genus[rownames(tax.tab.fungi) %in% rownames(temp)] <- "Lichenoconium"
+tax.tab.fungi$Family[tax.tab.fungi$Genus=="Lichenoconium"] <- "Lichenoconiaceae"
+tax.tab.fungi$Order[tax.tab.fungi$Genus=="Lichenoconium"] <- "Lichenoconiales"
+tax.tab.fungi$Class[tax.tab.fungi$Genus=="Lichenoconium"] <- "Dothideomycetes"
+tax.tab.fungi$Phylum[tax.tab.fungi$Genus=="Lichenoconium"] <- "Ascomycota"
+tax.tab.fungi$Species[tax.tab.fungi$Genus=="Lichenoconium"] <- NA
+
+tax.tab.fungi <- as.matrix(tax.tab.fungi)
+tax_table(pseq.clr$FITS) <- tax.tab.fungi

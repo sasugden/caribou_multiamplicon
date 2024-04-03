@@ -52,13 +52,13 @@ p1 <- ggplot() +
 # (b) Ordination ####
 temp <- bdiv.ordinations.all[[7]][["points"]][[3]]
 temp$Herd <- factor(temp$Herd, levels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                                        "Wells Grey North", "Columbia North", "Central Selkirks",
+                                        "Wells Gray North", "Columbia North", "Central Selkirks",
                                         "Tonquin", "Brazeau", "Revelstoke pen"))
 
 temp$GroupHerd <- paste0(temp$Group, temp$Herd)
 temp$GroupHerd <- factor(temp$GroupHerd,
                          levels=c("deep-snowHart Ranges", "deep-snowNorth Cariboo",
-                                  "deep-snowBarkerville", "deep-snowWells Grey North",
+                                  "deep-snowBarkerville", "deep-snowWells Gray North",
                                   "deep-snowColumbia North", "deep-snowCentral Selkirks",
                                   "shallow-snowTonquin", "shallow-snowBrazeau", "Revelstoke penRevelstoke pen"))
 
@@ -82,11 +82,11 @@ p2 <- ggplot(data =  temp, aes(x=PC1, y=PC2, color=GroupHerd, shape=GroupHerd)) 
   scale_color_manual(name="Guide1", values=c(brewer.pal(8, "Set1")[c(1,2,4,5,7,8)], 
                                              brewer.pal(4, "Paired")[c(3:4)], "darkorchid1"),
                      labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                              "Wells Grey North", "Columbia North", "Central Selkirks",
+                              "Wells Gray North", "Columbia North", "Central Selkirks",
                               "Tonquin", "Brazeau", "Revelstoke pen")) +
   scale_shape_manual(name="Guide1", values=c(16,16,16,16,16,16,17,17,15),
                      labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                              "Wells Grey North", "Columbia North", "Central Selkirks",
+                              "Wells Gray North", "Columbia North", "Central Selkirks",
                               "Tonquin", "Brazeau", "Revelstoke pen"))
 
 # (c) Heat map ####
@@ -115,18 +115,16 @@ df.lichens2 <- reshape2::melt(df.lichens2)
 # Prepare faceting variables for plotting.
 df.lichens2$Facet <- rep("population")
 df.lichens2$Facet[df.lichens2$Group %in% c("Barkerville", "Central Selkirks", "Hart Ranges",
-                                           "North Cariboo", "Columbia North", "Wells Grey North")] <- "deep-snow"
+                                           "North Cariboo", "Columbia North", "Wells Gray North")] <- "deep-snow"
 df.lichens2$Facet[df.lichens2$Group %in% c("Brazeau", "Tonquin")] <- "shallow-snow"
 
 df.lichens2$Group <- factor(df.lichens2$Group, levels=c(
   "deep-snow", "shallow-snow", "Revelstoke pen",
-  "Hart Ranges", "North Cariboo", "Barkerville", "Wells Grey North", "Columbia North", "Central Selkirks",
-  "Tonquin", "Brazeau"
-))
+  "Hart Ranges", "North Cariboo", "Barkerville", "Wells Gray North", "Columbia North", "Central Selkirks",
+  "Tonquin", "Brazeau"))
 
 df.lichens2$Facet <- factor(df.lichens2$Facet, levels=c(
-  "population", "deep-snow", "shallow-snow"
-))
+  "population", "deep-snow", "shallow-snow"))
 
 # Replace zero abundances with '-' and replace abundances >50 with 50.
 df.lichens2$rounded <- as.numeric(df.lichens2$value)
@@ -189,7 +187,7 @@ p3 <- ggplot(df.lichens2, aes(x=Genus, y=Group, fill=sqrt(mean_color))) +
         strip.text = element_text(size=7),
         axis.text.y = element_text(size=7),
         legend.position="none") +
-  labs(tag="c", x="Genus", y="Population / Herd\n")
+  labs(tag="c", x="Genus", y="Group / Subpopulation\n")
 
 legend <- cowplot::get_legend(ggplot(df.lichens2, aes(x=Genus, y=Group, fill=sqrt(mean_color))) +
                                 geom_tile() +
@@ -203,10 +201,10 @@ legend <- cowplot::get_legend(ggplot(df.lichens2, aes(x=Genus, y=Group, fill=sqr
                                 scale_x_discrete(expand=c(0,0)) +
                                 scale_y_discrete(expand=c(0,0), limits=rev) +
                                 theme(axis.text.x = element_text(angle=90, vjust=0.25, hjust=1, size=8),
-                                      strip.text = element_text(size=7),
+                                      strip.text = element_text(size=11),
                                       legend.position="right", legend.text=element_text(size=7),
-                                      legend.title=element_text(hjust=0.5, size=7)) +
-                                labs(tag="c", x="Genus", y="Population / Herd\n"))
+                                      legend.title=element_text(hjust=0.5, size=14)) +
+                                labs(tag="c", x="Genus", y="Group / Subpopulation\n"))
 
 # (-) Assemble ####
 grid.arrange(p1, p2, p3, layout_matrix=rbind(c(1,1,1,2,2,2,2),c(3,3,3,3,3,3,3)), heights=c(0.4,0.6))
@@ -226,13 +224,13 @@ rm(p1, p2, p3, plot, temp, df.lichens, df.lichens2, indic.lichen)
 # (a) Algae ordination ####
 temp <- bdiv.ordinations.all$algae$points[[3]]
 temp$Herd <- factor(temp$Herd, levels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                                        "Wells Grey North", "Columbia North", "Central Selkirks",
+                                        "Wells Gray North", "Columbia North", "Central Selkirks",
                                         "Tonquin", "Brazeau", "Revelstoke pen", "LARS"))
 
 temp$GroupHerd <- paste0(temp$Group, temp$Herd)
 temp$GroupHerd <- factor(temp$GroupHerd,
                          levels=c("deep-snowHart Ranges", "deep-snowNorth Cariboo",
-                                  "deep-snowBarkerville", "deep-snowWells Grey North",
+                                  "deep-snowBarkerville", "deep-snowWells Gray North",
                                   "deep-snowColumbia North", "deep-snowCentral Selkirks",
                                   "shallow-snowTonquin", "shallow-snowBrazeau", "Revelstoke penRevelstoke pen",
                                   "LARSLARS"))
@@ -243,7 +241,7 @@ p1 <- ggplot(data =  temp, aes(PC1, PC2)) +
   geom_point(aes(color = GroupHerd, shape = GroupHerd), size=1.25) +
   stat_ellipse(aes(group=Group), level=0.95, linewidth=0.5, color="darkgrey") +
   theme_bw() + plot_theme +
-  guides(color=guide_legend(ncol=2), shape=FALSE) +
+  guides(color=guide_legend(ncol=2), shape="none") +
   labs(x="PC1 (20.2%)", y="PC2 (19.5%)", tag="a") +
   theme(panel.background = element_rect(colour = "black", size=0.5, fill=NA),
         axis.line = element_line(colour = "black", size=0.5),
@@ -260,11 +258,11 @@ p1 <- ggplot(data =  temp, aes(PC1, PC2)) +
                                              brewer.pal(4, "Paired")[c(3:4)], 
                                              "darkorchid1", "gray62"),
                      labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                              "Wells Grey North", "Columbia North", "Central Selkirks",
+                              "Wells Gray North", "Columbia North", "Central Selkirks",
                               "Tonquin", "Brazeau", "Revelstoke pen","LARS")) +
   scale_shape_manual(name="Guide1", values=c(16,16,16,16,16,16,17,17,15,18),
                      labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                              "Wells Grey North", "Columbia North", "Central Selkirks",
+                              "Wells Gray North", "Columbia North", "Central Selkirks",
                               "Tonquin", "Brazeau", "Revelstoke pen","LARS"))
 
 legend <- cowplot::get_legend(ggplot(data =  temp, aes(PC1, PC2)) + 
@@ -286,11 +284,11 @@ legend <- cowplot::get_legend(ggplot(data =  temp, aes(PC1, PC2)) +
                                                                            brewer.pal(4, "Paired")[c(3:4)], 
                                                                            "darkorchid1", "gray62"),
                                                    labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                                                            "Wells Grey North", "Columbia North", "Central Selkirks",
+                                                            "Wells Gray North", "Columbia North", "Central Selkirks",
                                                             "Tonquin", "Brazeau", "Revelstoke pen","LARS")) +
                                 scale_shape_manual(name="Guide1", values=c(16,16,16,16,16,16,17,17,15,18),
                                                    labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                                                            "Wells Grey North", "Columbia North", "Central Selkirks",
+                                                            "Wells Gray North", "Columbia North", "Central Selkirks",
                                                             "Tonquin", "Brazeau", "Revelstoke pen","LARS")))
 
 # (b) Algae heat map ####
@@ -326,16 +324,15 @@ df.algae2 <- reshape2::melt(df.algae2)
 
 df.algae2$Facet <- rep("population")
 df.algae2$Facet[df.algae2$Group %in% c("Barkerville", "Central Selkirks", "Hart Ranges",
-                                       "North Cariboo", "Columbia North", "Wells Grey North")] <- "deep-snow"
+                                       "North Cariboo", "Columbia North", "Wells Gray North")] <- "deep-snow"
 df.algae2$Facet[df.algae2$Group %in% c("Brazeau", "Tonquin")] <- "shallow-snow"
 df.algae2$Group <- factor(df.algae2$Group, levels=c(
   "deep-snow", "shallow-snow", "Revelstoke pen", "LARS",
-  "Hart Ranges", "North Cariboo", "Barkerville", "Wells Grey North", "Columbia North", "Central Selkirks",
-  "Tonquin", "Brazeau"
-))
+  "Hart Ranges", "North Cariboo", "Barkerville", "Wells Gray North", "Columbia North", "Central Selkirks",
+  "Tonquin", "Brazeau"))
+
 df.algae2$Facet <- factor(df.algae2$Facet, levels=c(
-  "population", "deep-snow", "shallow-snow"
-))
+  "population", "deep-snow", "shallow-snow"))
 
 df.algae2$rounded <- as.numeric(df.algae2$value)
 df.algae2$rounded[df.algae2$rounded==0] <- "-"
@@ -428,13 +425,13 @@ algae_legend <- cowplot::get_legend(
 # (c) Plant ordination ####
 temp <- bdiv.ordinations.all[[4]][["points"]][[3]]
 temp$Herd <- factor(temp$Herd, levels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                                        "Wells Grey North", "Columbia North", "Central Selkirks",
+                                        "Wells Gray North", "Columbia North", "Central Selkirks",
                                         "Tonquin", "Brazeau", "Revelstoke pen", "LARS"))
 
 temp$GroupHerd <- paste0(temp$Group, temp$Herd)
 temp$GroupHerd <- factor(temp$GroupHerd,
                          levels=c("deep-snowHart Ranges", "deep-snowNorth Cariboo",
-                                  "deep-snowBarkerville", "deep-snowWells Grey North",
+                                  "deep-snowBarkerville", "deep-snowWells Gray North",
                                   "deep-snowColumbia North", "deep-snowCentral Selkirks",
                                   "shallow-snowTonquin", "shallow-snowBrazeau", "Revelstoke penRevelstoke pen",
                                   "LARSLARS"))
@@ -487,16 +484,15 @@ df.plants2 <- reshape2::melt(df.plants2)
 
 df.plants2$Facet <- rep("population")
 df.plants2$Facet[df.plants2$Group %in% c("Barkerville", "Central Selkirks", "Hart Ranges",
-                                         "North Cariboo", "Columbia North", "Wells Grey North")] <- "deep-snow"
+                                         "North Cariboo", "Columbia North", "Wells Gray North")] <- "deep-snow"
 df.plants2$Facet[df.plants2$Group %in% c("Brazeau", "Tonquin")] <- "shallow-snow"
 df.plants2$Group <- factor(df.plants2$Group, levels=c(
   "deep-snow", "shallow-snow", "Revelstoke pen", "LARS",
-  "Hart Ranges", "North Cariboo", "Barkerville", "Wells Grey North", "Columbia North", "Central Selkirks",
-  "Tonquin", "Brazeau"
-))
+  "Hart Ranges", "North Cariboo", "Barkerville", "Wells Gray North", "Columbia North", "Central Selkirks",
+  "Tonquin", "Brazeau"))
+
 df.plants2$Facet <- factor(df.plants2$Facet, levels=c(
-  "population", "deep-snow", "shallow-snow"
-))
+  "population", "deep-snow", "shallow-snow"))
 
 df.plants2$rounded <- as.numeric(df.plants2$value)
 df.plants2$rounded[df.plants2$rounded==0] <- "-"
@@ -546,7 +542,7 @@ df.plants2$Phylum <- rep("Plants")
 mock.data <- df.plants2
 mock.data <- subset(df.plants2, Facet=="deep-snow")
 mock.data$Group[mock.data$Group=="Barkerville"] <- "North Cariboo"
-mock.data$Group[mock.data$Group=="Hart Ranges"] <- "Wells Grey North"
+mock.data$Group[mock.data$Group=="Hart Ranges"] <- "Wells Gray North"
 mock.data$Group[mock.data$Group=="Central Selkirks"] <- "Columbia North"
 mock.data$rounded = rep("-")
 mock.data$value = rep(0)
@@ -571,7 +567,7 @@ p4 <- ggplot(df.plants2, aes(x=Group, y=Genus, fill=sqrt(mean_color))) +
     strip.background.x=element_blank(), 
     axis.text.y = element_text(size=7, vjust=0.5),
     legend.position="none") +
-  labs(tag="d", x="Population / Herd", y="Genus")
+  labs(tag="d", x="Group / Subpopulation", y="Genus")
 
 # (-) Assemble ####
 grid.arrange(p1, p2, p3, p4, ncol=2, widths=c(0.3, 0.7), heights=c(0.35,0.65))
@@ -595,7 +591,7 @@ plot <- arrangeGrob(p1, p2, p3, p4, legend,
                     heights=c(0.4,0.4,0.15))
 
 ggsave("~/caribou/figures/raw_fig3_plant_algae_panels.jpg", plot, width=6.5, height=5.5, units="in", dpi=300)
-ggsave("~/fig3_legend.jpg", algae_legend, width=6.5, height=4, units="in", dpi=300)
+ggsave("~/caribou/figures/fig3_legend.jpg", algae_legend, width=6.5, height=4, units="in", dpi=300)
 
 rm(p1, p2, p3, p4, plot, df.algae2, df.algae.hrd, df.algae,
    df.plants, df.plants2)
@@ -631,13 +627,13 @@ p1 <- ggplot() +
 # (b) Bacteria ordination ####
 temp <- bdiv.ordinations.all[[1]][["points"]][[3]]
 temp$Herd <- factor(temp$Herd, levels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                                        "Wells Grey North", "Columbia North", "Central Selkirks",
+                                        "Wells Gray North", "Columbia North", "Central Selkirks",
                                         "Tonquin", "Brazeau", "Revelstoke pen", "LARS"))
 
 temp$GroupHerd <- paste0(temp$Group, temp$Herd)
 temp$GroupHerd <- factor(temp$GroupHerd,
                          levels=c("deep-snowHart Ranges", "deep-snowNorth Cariboo",
-                                  "deep-snowBarkerville", "deep-snowWells Grey North",
+                                  "deep-snowBarkerville", "deep-snowWells Gray North",
                                   "deep-snowColumbia North", "deep-snowCentral Selkirks",
                                   "shallow-snowTonquin", "shallow-snowBrazeau", "Revelstoke penRevelstoke pen",
                                   "LARSLARS"))
@@ -665,11 +661,11 @@ p2 <- ggplot(data =  temp, aes(PC1, PC2)) +
                                              brewer.pal(4, "Paired")[c(3:4)], 
                                              "darkorchid1", "gray62"),
                      labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                              "Wells Grey North", "Columbia North", "Central Selkirks",
+                              "Wells Gray North", "Columbia North", "Central Selkirks",
                               "Tonquin", "Brazeau", "Revelstoke pen","LARS")) +
   scale_shape_manual(name="Guide1", values=c(16,16,16,16,16,16,17,17,15,18),
                      labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                              "Wells Grey North", "Columbia North", "Central Selkirks",
+                              "Wells Gray North", "Columbia North", "Central Selkirks",
                               "Tonquin", "Brazeau", "Revelstoke pen","LARS"))
 
 # (c) Heat map ####
@@ -695,17 +691,15 @@ df.16S2 <- reshape2::melt(df.16S2)
 
 df.16S2$Facet <- rep("population")
 df.16S2$Facet[df.16S2$Group %in% c("Barkerville", "Central Selkirks", "Hart Ranges",
-                                   "North Cariboo", "Columbia North", "Wells Grey North")] <- "deep-snow"
+                                   "North Cariboo", "Columbia North", "Wells Gray North")] <- "deep-snow"
 df.16S2$Facet[df.16S2$Group %in% c("Brazeau", "Tonquin")] <- "shallow-snow"
 df.16S2$Group <- factor(df.16S2$Group, levels=c(
   "deep-snow", "shallow-snow", "Revelstoke pen", "LARS",
-  "Hart Ranges", "North Cariboo", "Barkerville", "Wells Grey North", "Columbia North", "Central Selkirks",
-  "Tonquin", "Brazeau"
-))
+  "Hart Ranges", "North Cariboo", "Barkerville", "Wells Gray North", "Columbia North", "Central Selkirks",
+  "Tonquin", "Brazeau"))
 
 df.16S2$Facet <- factor(df.16S2$Facet, levels=c(
-  "population", "deep-snow", "shallow-snow"
-))
+  "population", "deep-snow", "shallow-snow"))
 
 df.16S2$rounded <- as.numeric(df.16S2$value)
 df.16S2$rounded[df.16S2$rounded==0] <- "-"
@@ -772,7 +766,7 @@ p3 <- ggplot(df.16S2, aes(x=Genus, y=Group, fill=sqrt(mean_color))) +
         strip.text = element_text(size=7),
         axis.text.y = element_text(size=7),
         legend.position="none") +
-  labs(tag="c", x="Genus", y="Population / Herd\n")
+  labs(tag="c", x="Genus", y="Group / Subpopulation\n")
 
 legend <- cowplot::get_legend(
   ggplot(df.16S2, aes(x=Genus, y=Group, fill=sqrt(mean_color))) +
@@ -794,7 +788,7 @@ legend <- cowplot::get_legend(
           axis.text.y = element_text(size=7),
           legend.title=element_text(hjust=0.5, size=7),
           legend.position="right") +
-    labs(tag="c", x="Genus", y="Population / Herd\n")
+    labs(tag="c", x="Genus", y="Group / Subpopulation\n")
 )
 
 
@@ -889,7 +883,7 @@ for(i in c(1:2)){
   if(i==2){temp$Genus[temp$Family=="Magnoliophyta"] <- "Uncl. Magnoliophyta"}
   
   temp$Herd <- factor(temp$Herd, 
-                      levels=c("Hart Ranges", "North Cariboo", "Barkerville", "Wells Grey North",
+                      levels=c("Hart Ranges", "North Cariboo", "Barkerville", "Wells Gray North",
                                "Columbia North", "Central Selkirks", "Tonquin", "Brazeau",
                                "Revelstoke pen", "LARS"))
   
@@ -1289,8 +1283,9 @@ p.data <- rbind(p1.data, p2.data, p3.data, p4.data)
 p.data$Herd <- factor(p.data$Herd,
                        levels=c("deep-snow", "shallow-snow", "Revelstoke pen", "LARS",
                                 "Hart Ranges", "North Cariboo", "Barkerville",
-                                "Wells Grey North", "Columbia North", "Central Selkirks",
+                                "Wells Gray North", "Columbia North", "Central Selkirks",
                                 "Tonquin", "Brazeau"))
+
 p.data$Group <- factor(p.data$Group,
                         levels=c("deep-snow", "shallow-snow", "Revelstoke pen", "LARS"))
 p.data$Facet <- factor(p.data$Facet,
@@ -1306,7 +1301,7 @@ p1 <- ggplot(p.data, aes(x=Herd, y=Observed_Extrap, fill=Group)) +
                              "darkorchid1", "gray62")) +
   theme(axis.text.x=element_text(angle=45, vjust=1, hjust=1),
         legend.position="none") +
-  labs(x="Population / Herd", y="ASV richness", tag="a")
+  labs(x="Group / Subpopulation", y="ASV richness", tag="a")
 
 p2 <- ggplot(p.data, aes(x=Herd, y=Shannon_Extrap, fill=Group)) +
   geom_boxplot() +
@@ -1316,7 +1311,7 @@ p2 <- ggplot(p.data, aes(x=Herd, y=Shannon_Extrap, fill=Group)) +
                              "darkorchid1", "gray62")) +
   theme(axis.text.x=element_text(angle=45, vjust=1, hjust=1),
         legend.position="none") +
-  labs(x="Population / Herd", y="Shannon diversity", tag="b")
+  labs(x="Group / Subpopulation", y="Shannon diversity", tag="b")
 
 legend <- cowplot::get_legend(
   ggplot(p.data, aes(x=Herd, y=Shannon_Extrap, fill=Group)) +
@@ -1329,7 +1324,7 @@ legend <- cowplot::get_legend(
     theme(axis.text.x=element_text(angle=45, vjust=1, hjust=1),
           legend.position="right",
           legend.title=element_blank()) +
-    labs(x="Population / Herd", y="Shannon diversity", tag="b")
+    labs(x="Group / Subpopulation", y="Shannon diversity", tag="b")
 )
 
 grid.arrange(p1, p2, legend,
@@ -1356,13 +1351,13 @@ x.data <- list()
 for(i in c(1:4)){
   temp <- bdiv.ordinations.all[[i]][["points"]][[3]]
   temp$Herd <- factor(temp$Herd, levels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                                                "Wells Grey North", "Columbia North", "Central Selkirks",
+                                                "Wells Gray North", "Columbia North", "Central Selkirks",
                                                 "Tonquin", "Brazeau", "Revelstoke pen", "LARS"))
   
   temp$GroupHerd <- paste0(temp$Group, temp$Herd)
   temp$GroupHerd <- factor(temp$GroupHerd,
                               levels=c("deep-snowHart Ranges", "deep-snowNorth Cariboo",
-                                       "deep-snowBarkerville", "deep-snowWells Grey North",
+                                       "deep-snowBarkerville", "deep-snowWells Gray North",
                                        "deep-snowColumbia North", "deep-snowCentral Selkirks",
                                        "shallow-snowTonquin", "shallow-snowBrazeau", "Revelstoke penRevelstoke pen",
                                        "LARSLARS"))
@@ -1396,11 +1391,11 @@ p1 <- ggplot(data =  p.data[[1]], aes(x=PC1, y=PC2, color=GroupHerd, shape=Group
                                              brewer.pal(4, "Paired")[c(3:4)], 
                                              "darkorchid1", "gray62"),
                      labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                              "Wells Grey North", "Columbia North", "Central Selkirks",
+                              "Wells Gray North", "Columbia North", "Central Selkirks",
                               "Tonquin", "Brazeau", "Revelstoke pen","LARS")) +
   scale_shape_manual(name="Guide1", values=c(16,16,16,16,16,16,17,17,15,18),
                      labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                              "Wells Grey North", "Columbia North", "Central Selkirks",
+                              "Wells Gray North", "Columbia North", "Central Selkirks",
                               "Tonquin", "Brazeau", "Revelstoke pen","LARS"))
 
 p2 <- ggplot(data =  p.data[[2]], aes(x=PC1, y=PC2, color=GroupHerd, shape=GroupHerd)) + 
@@ -1419,11 +1414,11 @@ p2 <- ggplot(data =  p.data[[2]], aes(x=PC1, y=PC2, color=GroupHerd, shape=Group
                                              brewer.pal(4, "Paired")[c(3:4)], 
                                              "darkorchid1", "gray62"),
                      labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                              "Wells Grey North", "Columbia North", "Central Selkirks",
+                              "Wells Gray North", "Columbia North", "Central Selkirks",
                               "Tonquin", "Brazeau", "Revelstoke pen","LARS")) +
   scale_shape_manual(name="Guide1", values=c(16,16,16,16,16,16,17,17,15,18),
                      labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                              "Wells Grey North", "Columbia North", "Central Selkirks",
+                              "Wells Gray North", "Columbia North", "Central Selkirks",
                               "Tonquin", "Brazeau", "Revelstoke pen","LARS"))
 
 p3 <- ggplot(data =  p.data[[3]], aes(x=PC1, y=PC2, color=GroupHerd, shape=GroupHerd)) + 
@@ -1442,11 +1437,11 @@ p3 <- ggplot(data =  p.data[[3]], aes(x=PC1, y=PC2, color=GroupHerd, shape=Group
                                              brewer.pal(4, "Paired")[c(3:4)], 
                                              "darkorchid1", "gray62"),
                      labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                              "Wells Grey North", "Columbia North", "Central Selkirks",
+                              "Wells Gray North", "Columbia North", "Central Selkirks",
                               "Tonquin", "Brazeau", "Revelstoke pen","LARS")) +
   scale_shape_manual(name="Guide1", values=c(16,16,16,16,16,16,17,17,15,18),
                      labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                              "Wells Grey North", "Columbia North", "Central Selkirks",
+                              "Wells Gray North", "Columbia North", "Central Selkirks",
                               "Tonquin", "Brazeau", "Revelstoke pen","LARS"))
 
 p4 <- ggplot(data =  p.data[[4]], aes(x=PC1, y=PC2, color=GroupHerd, shape=GroupHerd)) + 
@@ -1466,13 +1461,13 @@ p4 <- ggplot(data =  p.data[[4]], aes(x=PC1, y=PC2, color=GroupHerd, shape=Group
                                              "darkorchid1", "gray62"),
                      labels=c("Hart Ranges", # "North Cariboo", 
                               "Barkerville",
-                              # "Wells Grey North", "Columbia North", 
+                              # "Wells Gray North", "Columbia North", 
                               "Central Selkirks",
                               "Tonquin", "Brazeau", "Revelstoke pen","LARS")) +
   scale_shape_manual(name="Guide1", values=c(16,16,16,17,17,15,18),
                      labels=c("Hart Ranges", # "North Cariboo", 
                               "Barkerville",
-                              # "Wells Grey North", "Columbia North", 
+                              # "Wells Gray North", "Columbia North", 
                               "Central Selkirks",
                               "Tonquin", "Brazeau", "Revelstoke pen","LARS"))
 
@@ -1482,7 +1477,7 @@ legend <- cowplot::get_legend(
   facet_wrap(~Amplicon) +
   stat_ellipse(aes(group=Group), level=0.95, linewidth=0.5, color="darkgrey") +
   theme_bw() + plot_theme +
-  guides(color=guide_legend(ncol=5)) +
+  guides(color=guide_legend(ncol=4)) +
   theme(panel.background = element_rect(colour = "black", size=0.5, fill=NA),
         axis.line = element_line(colour = "black", size=0.5),
         legend.title=element_blank(),
@@ -1492,11 +1487,11 @@ legend <- cowplot::get_legend(
                                              brewer.pal(4, "Paired")[c(3:4)], 
                                              "darkorchid1", "gray62"),
                      labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                              "Wells Grey North", "Columbia North", "Central Selkirks",
+                              "Wells Gray North", "Columbia North", "Central Selkirks",
                               "Tonquin", "Brazeau", "Revelstoke pen","LARS")) +
   scale_shape_manual(name="Guide1", values=c(16,16,16,16,16,16,17,17,15,18),
                      labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                              "Wells Grey North", "Columbia North", "Central Selkirks",
+                              "Wells Gray North", "Columbia North", "Central Selkirks",
                               "Tonquin", "Brazeau", "Revelstoke pen","LARS"))
 )
 
@@ -1553,7 +1548,7 @@ temp3 <- temp2 %>% dplyr::group_by(Group, Herd) %>%
 
 temp3 <- reshape2::melt(temp3)
 temp3$Herd <- factor(temp3$Herd,
-                     levels=c("Hart Ranges", "North Cariboo", "Barkerville", "Wells Grey North", "Columbia North",
+                     levels=c("Hart Ranges", "North Cariboo", "Barkerville", "Wells Gray North", "Columbia North",
                               "Central Selkirks", "Tonquin", "Brazeau", "Revelstoke pen", "LARS"))
 
 temp3$Group <- factor(temp3$Group, levels=c("deep-snow", "shallow-snow", "Revelstoke pen", "LARS"))
@@ -1614,7 +1609,7 @@ for(j in c(1:nrow(temp4))){
 }
 
 temp4$Herd <- factor(temp4$Herd,
-                     levels=c("Hart Ranges", "North Cariboo", "Barkerville", "Wells Grey North", "Columbia North",
+                     levels=c("Hart Ranges", "North Cariboo", "Barkerville", "Wells Gray North", "Columbia North",
                               "Central Selkirks", "Tonquin", "Brazeau", "Revelstoke pen", "LARS"))
 
 temp4$Group <- as.character(temp4$Group)
@@ -1652,13 +1647,13 @@ x.data <- list()
 for(i in c(1,2,4,5)){
   temp <- bdiv.ordinations.all$lichens$points[[i]]
   temp$Herd <- factor(temp$Herd, levels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                                          "Wells Grey North", "Columbia North", "Central Selkirks",
+                                          "Wells Gray North", "Columbia North", "Central Selkirks",
                                           "Tonquin", "Brazeau", "Revelstoke pen", "LARS"))
   
   temp$GroupHerd <- paste0(temp$Group, temp$Herd)
   temp$GroupHerd <- factor(temp$GroupHerd,
                            levels=c("deep-snowHart Ranges", "deep-snowNorth Cariboo",
-                                    "deep-snowBarkerville", "deep-snowWells Grey North",
+                                    "deep-snowBarkerville", "deep-snowWells Gray North",
                                     "deep-snowColumbia North", "deep-snowCentral Selkirks",
                                     "shallow-snowTonquin", "shallow-snowBrazeau", "Revelstoke penRevelstoke pen",
                                     "LARSLARS"))
@@ -1692,11 +1687,11 @@ p1 <- ggplot(data =  p.data[[1]], aes(x=MDS1, y=MDS2, color=GroupHerd, shape=Gro
                                              brewer.pal(4, "Paired")[c(3:4)], 
                                              "darkorchid1", "gray62"),
                      labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                              "Wells Grey North", "Columbia North", "Central Selkirks",
+                              "Wells Gray North", "Columbia North", "Central Selkirks",
                               "Tonquin", "Brazeau", "Revelstoke pen","LARS")) +
   scale_shape_manual(name="Guide1", values=c(16,16,16,16,16,16,17,17,15,18),
                      labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                              "Wells Grey North", "Columbia North", "Central Selkirks",
+                              "Wells Gray North", "Columbia North", "Central Selkirks",
                               "Tonquin", "Brazeau", "Revelstoke pen","LARS"))
 
 p2 <- ggplot(data =  p.data[[2]], aes(x=MDS1, y=MDS2, color=GroupHerd, shape=GroupHerd)) + 
@@ -1715,11 +1710,11 @@ p2 <- ggplot(data =  p.data[[2]], aes(x=MDS1, y=MDS2, color=GroupHerd, shape=Gro
                                              brewer.pal(4, "Paired")[c(3:4)], 
                                              "darkorchid1", "gray62"),
                      labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                              "Wells Grey North", "Columbia North", "Central Selkirks",
+                              "Wells Gray North", "Columbia North", "Central Selkirks",
                               "Tonquin", "Brazeau", "Revelstoke pen","LARS")) +
   scale_shape_manual(name="Guide1", values=c(16,16,16,16,16,16,17,17,15,18),
                      labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                              "Wells Grey North", "Columbia North", "Central Selkirks",
+                              "Wells Gray North", "Columbia North", "Central Selkirks",
                               "Tonquin", "Brazeau", "Revelstoke pen","LARS"))
 
 p3 <- ggplot(data =  p.data[[4]], aes(x=MDS1, y=MDS2, color=GroupHerd, shape=GroupHerd)) + 
@@ -1738,11 +1733,11 @@ p3 <- ggplot(data =  p.data[[4]], aes(x=MDS1, y=MDS2, color=GroupHerd, shape=Gro
                                              brewer.pal(4, "Paired")[c(3:4)], 
                                              "darkorchid1", "gray62"),
                      labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                              "Wells Grey North", "Columbia North", "Central Selkirks",
+                              "Wells Gray North", "Columbia North", "Central Selkirks",
                               "Tonquin", "Brazeau", "Revelstoke pen","LARS")) +
   scale_shape_manual(name="Guide1", values=c(16,16,16,16,16,16,17,17,15,18),
                      labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                              "Wells Grey North", "Columbia North", "Central Selkirks",
+                              "Wells Gray North", "Columbia North", "Central Selkirks",
                               "Tonquin", "Brazeau", "Revelstoke pen","LARS"))
 
 p4 <- ggplot(data =  p.data[[5]], aes(x=MDS1, y=MDS2, color=GroupHerd, shape=GroupHerd)) + 
@@ -1761,11 +1756,11 @@ p4 <- ggplot(data =  p.data[[5]], aes(x=MDS1, y=MDS2, color=GroupHerd, shape=Gro
                                              brewer.pal(4, "Paired")[c(3:4)], 
                                              "darkorchid1", "gray62"),
                      labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                              "Wells Grey North", "Columbia North", "Central Selkirks",
+                              "Wells Gray North", "Columbia North", "Central Selkirks",
                               "Tonquin", "Brazeau", "Revelstoke pen","LARS")) +
   scale_shape_manual(name="Guide1", values=c(16,16,16,16,16,16,17,17,15,18),
                      labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                              "Wells Grey North", "Columbia North", "Central Selkirks",
+                              "Wells Gray North", "Columbia North", "Central Selkirks",
                               "Tonquin", "Brazeau", "Revelstoke pen","LARS"))
 
 legend <- cowplot::get_legend(
@@ -1785,11 +1780,11 @@ legend <- cowplot::get_legend(
                                                brewer.pal(4, "Paired")[c(3:4)], 
                                                "darkorchid1", "gray62"),
                        labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                                "Wells Grey North", "Columbia North", "Central Selkirks",
+                                "Wells Gray North", "Columbia North", "Central Selkirks",
                                 "Tonquin", "Brazeau", "Revelstoke pen","LARS")) +
     scale_shape_manual(name="Guide1", values=c(16,16,16,16,16,16,17,17,15,18),
                        labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                                "Wells Grey North", "Columbia North", "Central Selkirks",
+                                "Wells Gray North", "Columbia North", "Central Selkirks",
                                 "Tonquin", "Brazeau", "Revelstoke pen","LARS"))
 )
 
@@ -1814,7 +1809,7 @@ for(i in c(1:5)){
   
   temp$Herd <- as.character(temp$Herd)
   temp$Herd <- factor(temp$Herd, levels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                                          "Wells Grey North", "Columbia North", "Central Selkirks"))
+                                          "Wells Gray North", "Columbia North", "Central Selkirks"))
   if(i==1){temp$distance <- "Bray-Curtis"}
   if(i==2){temp$distance <- "Jaccard"}
   if(i==3){temp$distance <- "Aitchison"}
@@ -1844,7 +1839,7 @@ p1 <- ggplot(p.data[[1]], aes(x=MDS1, y=MDS2, color=Herd)) +
         legend.box="horizontal") +
   scale_color_manual(name="Guide1", values=c(brewer.pal(8, "Set1")[c(1,2,4,5,7,8)]),
                      labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                              "Wells Grey North", "Columbia North", "Central Selkirks"))
+                              "Wells Gray North", "Columbia North", "Central Selkirks"))
 
 p2 <- ggplot(p.data[[2]], aes(x=MDS1, y=MDS2, color=Herd)) + 
   geom_point(size=2, shape=16) +
@@ -1860,7 +1855,7 @@ p2 <- ggplot(p.data[[2]], aes(x=MDS1, y=MDS2, color=Herd)) +
         legend.box="horizontal") +
   scale_color_manual(name="Guide1", values=c(brewer.pal(8, "Set1")[c(1,2,4,5,7,8)]),
                      labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                              "Wells Grey North", "Columbia North", "Central Selkirks"))
+                              "Wells Gray North", "Columbia North", "Central Selkirks"))
 
 p3 <- ggplot(p.data[[3]], aes(x=PC1, y=PC2, color=Herd)) + 
   geom_point(size=2, shape=16) +
@@ -1876,7 +1871,7 @@ p3 <- ggplot(p.data[[3]], aes(x=PC1, y=PC2, color=Herd)) +
         legend.box="horizontal") +
   scale_color_manual(name="Guide1", values=c(brewer.pal(8, "Set1")[c(1,2,4,5,7,8)]),
                      labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                              "Wells Grey North", "Columbia North", "Central Selkirks"))
+                              "Wells Gray North", "Columbia North", "Central Selkirks"))
 
 p4 <- ggplot(p.data[[4]], aes(x=MDS1, y=MDS2, color=Herd)) + 
   geom_point(size=2, shape=16) +
@@ -1892,7 +1887,7 @@ p4 <- ggplot(p.data[[4]], aes(x=MDS1, y=MDS2, color=Herd)) +
         legend.box="horizontal") +
   scale_color_manual(name="Guide1", values=c(brewer.pal(8, "Set1")[c(1,2,4,5,7,8)]),
                      labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                              "Wells Grey North", "Columbia North", "Central Selkirks"))
+                              "Wells Gray North", "Columbia North", "Central Selkirks"))
 
 p5 <- ggplot(p.data[[5]], aes(x=MDS1, y=MDS2, color=Herd)) + 
   geom_point(size=2, shape=16) +
@@ -1908,7 +1903,7 @@ p5 <- ggplot(p.data[[5]], aes(x=MDS1, y=MDS2, color=Herd)) +
         legend.box="horizontal") +
   scale_color_manual(name="Guide1", values=c(brewer.pal(8, "Set1")[c(1,2,4,5,7,8)]),
                      labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                              "Wells Grey North", "Columbia North", "Central Selkirks"))
+                              "Wells Gray North", "Columbia North", "Central Selkirks"))
 
 p6 <- cowplot::get_legend(
   ggplot(p.data[[5]], aes(x=MDS1, y=MDS2, color=Herd)) + 
@@ -1924,7 +1919,7 @@ p6 <- cowplot::get_legend(
         legend.position="right") +
   scale_color_manual(name="Guide1", values=c(brewer.pal(8, "Set1")[c(1,2,4,5,7,8)]),
                      labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                              "Wells Grey North", "Columbia North", "Central Selkirks"))
+                              "Wells Gray North", "Columbia North", "Central Selkirks"))
 )
 
 
@@ -1974,13 +1969,13 @@ x.data <- list()
 for(i in c(1,2,4,5)){
   temp <- bdiv.ordinations.all$algae$points[[i]]
   temp$Herd <- factor(temp$Herd, levels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                                          "Wells Grey North", "Columbia North", "Central Selkirks",
+                                          "Wells Gray North", "Columbia North", "Central Selkirks",
                                           "Tonquin", "Brazeau", "Revelstoke pen", "LARS"))
   
   temp$GroupHerd <- paste0(temp$Group, temp$Herd)
   temp$GroupHerd <- factor(temp$GroupHerd,
                            levels=c("deep-snowHart Ranges", "deep-snowNorth Cariboo",
-                                    "deep-snowBarkerville", "deep-snowWells Grey North",
+                                    "deep-snowBarkerville", "deep-snowWells Gray North",
                                     "deep-snowColumbia North", "deep-snowCentral Selkirks",
                                     "shallow-snowTonquin", "shallow-snowBrazeau", "Revelstoke penRevelstoke pen",
                                     "LARSLARS"))
@@ -2016,11 +2011,11 @@ p1 <- ggplot(data =  p.data[[1]], aes(x=MDS1, y=MDS2, color=GroupHerd, shape=Gro
                                              brewer.pal(4, "Paired")[c(3:4)], 
                                              "darkorchid1", "gray62"),
                      labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                              "Wells Grey North", "Columbia North", "Central Selkirks",
+                              "Wells Gray North", "Columbia North", "Central Selkirks",
                               "Tonquin", "Brazeau", "Revelstoke pen","LARS")) +
   scale_shape_manual(name="Guide1", values=c(16,16,16,16,16,16,17,17,15,18),
                      labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                              "Wells Grey North", "Columbia North", "Central Selkirks",
+                              "Wells Gray North", "Columbia North", "Central Selkirks",
                               "Tonquin", "Brazeau", "Revelstoke pen","LARS"))
 
 p2 <- ggplot(data =  p.data[[2]], aes(x=MDS1, y=MDS2, color=GroupHerd, shape=GroupHerd)) + 
@@ -2039,11 +2034,11 @@ p2 <- ggplot(data =  p.data[[2]], aes(x=MDS1, y=MDS2, color=GroupHerd, shape=Gro
                                              brewer.pal(4, "Paired")[c(3:4)], 
                                              "darkorchid1", "gray62"),
                      labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                              "Wells Grey North", "Columbia North", "Central Selkirks",
+                              "Wells Gray North", "Columbia North", "Central Selkirks",
                               "Tonquin", "Brazeau", "Revelstoke pen","LARS")) +
   scale_shape_manual(name="Guide1", values=c(16,16,16,16,16,16,17,17,15,18),
                      labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                              "Wells Grey North", "Columbia North", "Central Selkirks",
+                              "Wells Gray North", "Columbia North", "Central Selkirks",
                               "Tonquin", "Brazeau", "Revelstoke pen","LARS"))
 
 p3 <- ggplot(data =  p.data[[4]], aes(x=MDS1, y=MDS2, color=GroupHerd, shape=GroupHerd)) + 
@@ -2062,11 +2057,11 @@ p3 <- ggplot(data =  p.data[[4]], aes(x=MDS1, y=MDS2, color=GroupHerd, shape=Gro
                                              brewer.pal(4, "Paired")[c(3:4)], 
                                              "darkorchid1", "gray62"),
                      labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                              "Wells Grey North", "Columbia North", "Central Selkirks",
+                              "Wells Gray North", "Columbia North", "Central Selkirks",
                               "Tonquin", "Brazeau", "Revelstoke pen","LARS")) +
   scale_shape_manual(name="Guide1", values=c(16,16,16,16,16,16,17,17,15,18),
                      labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                              "Wells Grey North", "Columbia North", "Central Selkirks",
+                              "Wells Gray North", "Columbia North", "Central Selkirks",
                               "Tonquin", "Brazeau", "Revelstoke pen","LARS"))
 
 p4 <- ggplot(data =  p.data[[5]], aes(x=MDS1, y=MDS2, color=GroupHerd, shape=GroupHerd)) + 
@@ -2085,11 +2080,11 @@ p4 <- ggplot(data =  p.data[[5]], aes(x=MDS1, y=MDS2, color=GroupHerd, shape=Gro
                                              brewer.pal(4, "Paired")[c(3:4)], 
                                              "darkorchid1", "gray62"),
                      labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                              "Wells Grey North", "Columbia North", "Central Selkirks",
+                              "Wells Gray North", "Columbia North", "Central Selkirks",
                               "Tonquin", "Brazeau", "Revelstoke pen","LARS")) +
   scale_shape_manual(name="Guide1", values=c(16,16,16,16,16,16,17,17,15,18),
                      labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                              "Wells Grey North", "Columbia North", "Central Selkirks",
+                              "Wells Gray North", "Columbia North", "Central Selkirks",
                               "Tonquin", "Brazeau", "Revelstoke pen","LARS"))
 
 legend <- cowplot::get_legend(
@@ -2109,11 +2104,11 @@ legend <- cowplot::get_legend(
                                                brewer.pal(4, "Paired")[c(3:4)], 
                                                "darkorchid1", "gray62"),
                        labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                                "Wells Grey North", "Columbia North", "Central Selkirks",
+                                "Wells Gray North", "Columbia North", "Central Selkirks",
                                 "Tonquin", "Brazeau", "Revelstoke pen","LARS")) +
     scale_shape_manual(name="Guide1", values=c(16,16,16,16,16,16,17,17,15,18),
                        labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                                "Wells Grey North", "Columbia North", "Central Selkirks",
+                                "Wells Gray North", "Columbia North", "Central Selkirks",
                                 "Tonquin", "Brazeau", "Revelstoke pen","LARS"))
 )
 
@@ -2145,7 +2140,7 @@ rm(p1, p2, p3, p4, legend, p5, plot, p.data, x.data)
 p1.data <- subset(sample_data.mb$algae, Group=="deep-snow")
 p1.data$Herd <- factor(p1.data$Herd)
 p1.data$Herd <- factor(p1.data$Herd, levels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                                              "Wells Grey North", "Columbia North", "Central Selkirks"))
+                                              "Wells Gray North", "Columbia North", "Central Selkirks"))
 
 p1.data <- p1.data[,c("Herd", "Observed_Extrap", "Shannon_Extrap")]
 p1.data <- reshape2::melt(p1.data)
@@ -2170,7 +2165,7 @@ for(i in c(1:5)){
   
   temp$Herd <- as.character(temp$Herd)
   temp$Herd <- factor(temp$Herd, levels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                                          "Wells Grey North", "Columbia North", "Central Selkirks"))
+                                          "Wells Gray North", "Columbia North", "Central Selkirks"))
   if(i==1){temp$distance <- "Bray-Curtis"}
   if(i==2){temp$distance <- "Jaccard"}
   if(i==3){temp$distance <- "Aitchison"}
@@ -2200,7 +2195,7 @@ p2 <- ggplot(p.data[[1]], aes(x=MDS1, y=MDS2, color=Herd)) +
         legend.box="horizontal") +
   scale_color_manual(name="Guide1", values=c(brewer.pal(8, "Set1")[c(1,2,4,5,7,8)]),
                      labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                              "Wells Grey North", "Columbia North", "Central Selkirks"))
+                              "Wells Gray North", "Columbia North", "Central Selkirks"))
 
 p3 <- ggplot(p.data[[2]], aes(x=MDS1, y=MDS2, color=Herd)) + 
   geom_point(size=2, shape=16) +
@@ -2216,7 +2211,7 @@ p3 <- ggplot(p.data[[2]], aes(x=MDS1, y=MDS2, color=Herd)) +
         legend.box="horizontal") +
   scale_color_manual(name="Guide1", values=c(brewer.pal(8, "Set1")[c(1,2,4,5,7,8)]),
                      labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                              "Wells Grey North", "Columbia North", "Central Selkirks"))
+                              "Wells Gray North", "Columbia North", "Central Selkirks"))
 
 p4 <- ggplot(p.data[[3]], aes(x=PC1, y=PC2, color=Herd)) + 
   geom_point(size=2, shape=16) +
@@ -2232,7 +2227,7 @@ p4 <- ggplot(p.data[[3]], aes(x=PC1, y=PC2, color=Herd)) +
         legend.box="horizontal") +
   scale_color_manual(name="Guide1", values=c(brewer.pal(8, "Set1")[c(1,2,4,5,7,8)]),
                      labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                              "Wells Grey North", "Columbia North", "Central Selkirks"))
+                              "Wells Gray North", "Columbia North", "Central Selkirks"))
 
 p5 <- ggplot(p.data[[4]], aes(x=MDS1, y=MDS2, color=Herd)) + 
   geom_point(size=2, shape=16) +
@@ -2248,7 +2243,7 @@ p5 <- ggplot(p.data[[4]], aes(x=MDS1, y=MDS2, color=Herd)) +
         legend.box="horizontal") +
   scale_color_manual(name="Guide1", values=c(brewer.pal(8, "Set1")[c(1,2,4,5,7,8)]),
                      labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                              "Wells Grey North", "Columbia North", "Central Selkirks"))
+                              "Wells Gray North", "Columbia North", "Central Selkirks"))
 
 p6 <- ggplot(p.data[[5]], aes(x=MDS1, y=MDS2, color=Herd)) + 
   geom_point(size=2, shape=16) +
@@ -2264,7 +2259,7 @@ p6 <- ggplot(p.data[[5]], aes(x=MDS1, y=MDS2, color=Herd)) +
         legend.box="horizontal") +
   scale_color_manual(name="Guide1", values=c(brewer.pal(8, "Set1")[c(1,2,4,5,7,8)]),
                      labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                              "Wells Grey North", "Columbia North", "Central Selkirks"))
+                              "Wells Gray North", "Columbia North", "Central Selkirks"))
 
 p7 <- cowplot::get_legend(
   ggplot(p.data[[5]], aes(x=MDS1, y=MDS2, color=Herd)) + 
@@ -2280,7 +2275,7 @@ p7 <- cowplot::get_legend(
           legend.position="right") +
     scale_color_manual(name="Guide1", values=c(brewer.pal(8, "Set1")[c(1,2,4,5,7,8)]),
                        labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                                "Wells Grey North", "Columbia North", "Central Selkirks"))
+                                "Wells Gray North", "Columbia North", "Central Selkirks"))
 )
 
 # (-) Assemble figure ####
@@ -2582,8 +2577,9 @@ myColors <- c("#999999", #Other
 names(myColors) <- levels(y4$Family)
 
 y4$Sample <- factor(y4$Sample, levels=c("deep-snow", "shallow-snow", "Revelstoke pen", "LARS",
-                                   "Hart Ranges", "North Cariboo", "Barkerville", "Wells Grey North",
+                                   "Hart Ranges", "North Cariboo", "Barkerville", "Wells Gray North",
                                     "Columbia North", "Central Selkirks", "Tonquin", "Brazeau"))
+
 y4$Facet <- factor(y4$Facet, levels=c("population", "deep-snow herds", "shallow-snow\nherds"))
 
 p1 <- ggplot(y4, aes(x=Sample, y=Abundance, fill=Family)) +
@@ -2602,10 +2598,10 @@ p1 <- ggplot(y4, aes(x=Sample, y=Abundance, fill=Family)) +
         legend.title=element_blank(),
         legend.position="right",
         legend.key.size=unit(1, "line")) +
-  labs(x="Population / Herd", y = "Mean relative abundance (%)", tag="a")
+  labs(x="Group / Subpopulation", y = "Mean relative abundance (%)", tag="a")
 
 # (b) Methanogens ####
-yt <- tax_glom(ctrl_data$archaea, taxrank="Genus")
+yt <- tax_glom(ctrl_data$archaea$archaea, taxrank="Genus")
 yt <- psmelt(yt)
 yt <- subset(yt, Abundance > 0)
 x <- yt %>% dplyr::group_by(Genus, Herd) %>% dplyr::count()
@@ -2622,7 +2618,7 @@ yt <- merge(yt, x, by="Herd", all=TRUE)
 
 yt$prev <- 100 * yt$n / yt$Total
 
-yt$Herd <- factor(yt$Herd, levels=c("Hart Ranges", "North Cariboo", "Barkerville", "Wells Grey North",
+yt$Herd <- factor(yt$Herd, levels=c("Hart Ranges", "North Cariboo", "Barkerville", "Wells Gray North",
                                         "Columbia North", "Central Selkirks", "Tonquin", "Brazeau",
                                         "Revelstoke pen", "LARS"))
 
@@ -2651,7 +2647,7 @@ grid.arrange(p1, p2, nrow=2, heights=c(0.6, 0.4))
 
 plot <- arrangeGrob(p1, p2, nrow=2, heights=c(0.6, 0.4))
 
-ggsave("~/raw_figS11_16S_bars_methanogens.jpg", plot, 
+ggsave("~/caribou/figures/raw_figS11_16S_bars_methanogens.jpg", plot, 
        width=7, height=8, units="in")
 
 rm(y1, y5, seq, yt, y4, x, plot, p1, p2, y2)
@@ -2663,13 +2659,13 @@ x.data <- list()
 for(i in c(1,2,4,5)){
   temp <- bdiv.ordinations.all$protists$points[[i]]
   temp$Herd <- factor(temp$Herd, levels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                                          "Wells Grey North", "Columbia North", "Central Selkirks",
+                                          "Wells Gray North", "Columbia North", "Central Selkirks",
                                           "Tonquin", "Brazeau", "Revelstoke pen", "LARS"))
   
   temp$GroupHerd <- paste0(temp$Group, temp$Herd)
   temp$GroupHerd <- factor(temp$GroupHerd,
                            levels=c("deep-snowHart Ranges", "deep-snowNorth Cariboo",
-                                    "deep-snowBarkerville", "deep-snowWells Grey North",
+                                    "deep-snowBarkerville", "deep-snowWells Gray North",
                                     "deep-snowColumbia North", "deep-snowCentral Selkirks",
                                     "shallow-snowTonquin", "shallow-snowBrazeau", "Revelstoke penRevelstoke pen",
                                     "LARSLARS"))
@@ -2703,11 +2699,11 @@ p1 <- ggplot(data =  p.data[[1]], aes(x=MDS1, y=MDS2, color=GroupHerd, shape=Gro
                                              brewer.pal(4, "Paired")[c(3:4)], 
                                              "darkorchid1", "gray62"),
                      labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                              "Wells Grey North", "Columbia North", "Central Selkirks",
+                              "Wells Gray North", "Columbia North", "Central Selkirks",
                               "Tonquin", "Brazeau", "Revelstoke pen","LARS")) +
   scale_shape_manual(name="Guide1", values=c(16,16,16,16,16,16,17,17,15,18),
                      labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                              "Wells Grey North", "Columbia North", "Central Selkirks",
+                              "Wells Gray North", "Columbia North", "Central Selkirks",
                               "Tonquin", "Brazeau", "Revelstoke pen","LARS"))
 
 p2 <- ggplot(data =  p.data[[2]], aes(x=MDS1, y=MDS2, color=GroupHerd, shape=GroupHerd)) + 
@@ -2726,11 +2722,11 @@ p2 <- ggplot(data =  p.data[[2]], aes(x=MDS1, y=MDS2, color=GroupHerd, shape=Gro
                                              brewer.pal(4, "Paired")[c(3:4)], 
                                              "darkorchid1", "gray62"),
                      labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                              "Wells Grey North", "Columbia North", "Central Selkirks",
+                              "Wells Gray North", "Columbia North", "Central Selkirks",
                               "Tonquin", "Brazeau", "Revelstoke pen","LARS")) +
   scale_shape_manual(name="Guide1", values=c(16,16,16,16,16,16,17,17,15,18),
                      labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                              "Wells Grey North", "Columbia North", "Central Selkirks",
+                              "Wells Gray North", "Columbia North", "Central Selkirks",
                               "Tonquin", "Brazeau", "Revelstoke pen","LARS"))
 
 p3 <- ggplot(data =  p.data[[4]], aes(x=MDS1, y=MDS2, color=GroupHerd, shape=GroupHerd)) + 
@@ -2749,11 +2745,11 @@ p3 <- ggplot(data =  p.data[[4]], aes(x=MDS1, y=MDS2, color=GroupHerd, shape=Gro
                                              brewer.pal(4, "Paired")[c(3:4)], 
                                              "darkorchid1", "gray62"),
                      labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                              "Wells Grey North", "Columbia North", "Central Selkirks",
+                              "Wells Gray North", "Columbia North", "Central Selkirks",
                               "Tonquin", "Brazeau", "Revelstoke pen","LARS")) +
   scale_shape_manual(name="Guide1", values=c(16,16,16,16,16,16,17,17,15,18),
                      labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                              "Wells Grey North", "Columbia North", "Central Selkirks",
+                              "Wells Gray North", "Columbia North", "Central Selkirks",
                               "Tonquin", "Brazeau", "Revelstoke pen","LARS"))
 
 p4 <- ggplot(data =  p.data[[5]], aes(x=MDS1, y=MDS2, color=GroupHerd, shape=GroupHerd)) + 
@@ -2772,11 +2768,11 @@ p4 <- ggplot(data =  p.data[[5]], aes(x=MDS1, y=MDS2, color=GroupHerd, shape=Gro
                                              brewer.pal(4, "Paired")[c(3:4)], 
                                              "darkorchid1", "gray62"),
                      labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                              "Wells Grey North", "Columbia North", "Central Selkirks",
+                              "Wells Gray North", "Columbia North", "Central Selkirks",
                               "Tonquin", "Brazeau", "Revelstoke pen","LARS")) +
   scale_shape_manual(name="Guide1", values=c(16,16,16,16,16,16,17,17,15,18),
                      labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                              "Wells Grey North", "Columbia North", "Central Selkirks",
+                              "Wells Gray North", "Columbia North", "Central Selkirks",
                               "Tonquin", "Brazeau", "Revelstoke pen","LARS"))
 
 legend <- cowplot::get_legend(
@@ -2796,11 +2792,11 @@ legend <- cowplot::get_legend(
                                                brewer.pal(4, "Paired")[c(3:4)], 
                                                "darkorchid1", "gray62"),
                        labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                                "Wells Grey North", "Columbia North", "Central Selkirks",
+                                "Wells Gray North", "Columbia North", "Central Selkirks",
                                 "Tonquin", "Brazeau", "Revelstoke pen","LARS")) +
     scale_shape_manual(name="Guide1", values=c(16,16,16,16,16,16,17,17,15,18),
                        labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                                "Wells Grey North", "Columbia North", "Central Selkirks",
+                                "Wells Gray North", "Columbia North", "Central Selkirks",
                                 "Tonquin", "Brazeau", "Revelstoke pen","LARS"))
 )
 
@@ -2821,7 +2817,8 @@ rm(p1, p2, p3, p4, legend, p.data, x.data)
 p1.data <- subset(sample_data.mb$protists, Group=="deep-snow")
 p1.data$Herd <- factor(p1.data$Herd)
 p1.data$Herd <- factor(p1.data$Herd, levels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                                              "Wells Grey North", "Columbia North", "Central Selkirks"))
+                                              "Wells Gray North", "Columbia North", "Central Selkirks"))
+levels(p1.data$Herd)[levels(p1.data$Herd)=="Wells Gray North"] <- "Wells Gray North"
 
 p1.data <- p1.data[,c("Herd", "Observed_Extrap", "Shannon_Extrap")]
 p1.data <- reshape2::melt(p1.data)
@@ -2843,11 +2840,11 @@ p.data <- list()
 x.data <- list()
 
 for(i in c(1:5)){
-  temp <- bdiv.ordinations.deepsnow$protists$points[[i]]
+  temp <- bdiv.ordinations.deepsnow$X16S$points[[i]]
   
   temp$Herd <- as.character(temp$Herd)
   temp$Herd <- factor(temp$Herd, levels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                                          "Wells Grey North", "Columbia North", "Central Selkirks"))
+                                          "Wells Gray North", "Columbia North", "Central Selkirks"))
   if(i==1){temp$distance <- "Bray-Curtis"}
   if(i==2){temp$distance <- "Jaccard"}
   if(i==3){temp$distance <- "Aitchison"}
@@ -2856,7 +2853,7 @@ for(i in c(1:5)){
   
   p.data[[i]] <- temp
   
-  temp <- bdiv.ordinations.deepsnow$protists$models[[i]]
+  temp <- bdiv.ordinations.deepsnow$X16S$models[[i]]
   x.data[[i]] <- c(100*temp[["CA"]][["eig"]][[1]]/temp[["CA"]]$tot.chi, 
                    100*temp[["CA"]][["eig"]][[2]]/temp[["CA"]]$tot.chi)
   
@@ -2877,7 +2874,7 @@ p2 <- ggplot(p.data[[1]], aes(x=MDS1, y=MDS2, color=Herd)) +
         legend.box="horizontal") +
   scale_color_manual(name="Guide1", values=c(brewer.pal(8, "Set1")[c(1,2,4,5,7,8)]),
                      labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                              "Wells Grey North", "Columbia North", "Central Selkirks"))
+                              "Wells Gray North", "Columbia North", "Central Selkirks"))
 
 p3 <- ggplot(p.data[[2]], aes(x=MDS1, y=MDS2, color=Herd)) + 
   geom_point(size=2, shape=16) +
@@ -2893,7 +2890,7 @@ p3 <- ggplot(p.data[[2]], aes(x=MDS1, y=MDS2, color=Herd)) +
         legend.box="horizontal") +
   scale_color_manual(name="Guide1", values=c(brewer.pal(8, "Set1")[c(1,2,4,5,7,8)]),
                      labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                              "Wells Grey North", "Columbia North", "Central Selkirks"))
+                              "Wells Gray North", "Columbia North", "Central Selkirks"))
 
 p4 <- ggplot(p.data[[3]], aes(x=PC1, y=PC2, color=Herd)) + 
   geom_point(size=2, shape=16) +
@@ -2909,7 +2906,7 @@ p4 <- ggplot(p.data[[3]], aes(x=PC1, y=PC2, color=Herd)) +
         legend.box="horizontal") +
   scale_color_manual(name="Guide1", values=c(brewer.pal(8, "Set1")[c(1,2,4,5,7,8)]),
                      labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                              "Wells Grey North", "Columbia North", "Central Selkirks"))
+                              "Wells Gray North", "Columbia North", "Central Selkirks"))
 
 p5 <- ggplot(p.data[[4]], aes(x=MDS1, y=MDS2, color=Herd)) + 
   geom_point(size=2, shape=16) +
@@ -2925,7 +2922,7 @@ p5 <- ggplot(p.data[[4]], aes(x=MDS1, y=MDS2, color=Herd)) +
         legend.box="horizontal") +
   scale_color_manual(name="Guide1", values=c(brewer.pal(8, "Set1")[c(1,2,4,5,7,8)]),
                      labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                              "Wells Grey North", "Columbia North", "Central Selkirks"))
+                              "Wells Gray North", "Columbia North", "Central Selkirks"))
 
 p6 <- ggplot(p.data[[5]], aes(x=MDS1, y=MDS2, color=Herd)) + 
   geom_point(size=2, shape=16) +
@@ -2941,7 +2938,7 @@ p6 <- ggplot(p.data[[5]], aes(x=MDS1, y=MDS2, color=Herd)) +
         legend.box="horizontal") +
   scale_color_manual(name="Guide1", values=c(brewer.pal(8, "Set1")[c(1,2,4,5,7,8)]),
                      labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                              "Wells Grey North", "Columbia North", "Central Selkirks"))
+                              "Wells Gray North", "Columbia North", "Central Selkirks"))
 
 p7 <- cowplot::get_legend(
   ggplot(p.data[[5]], aes(x=MDS1, y=MDS2, color=Herd)) + 
@@ -2957,7 +2954,7 @@ p7 <- cowplot::get_legend(
           legend.position="right") +
     scale_color_manual(name="Guide1", values=c(brewer.pal(8, "Set1")[c(1,2,4,5,7,8)]),
                        labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                                "Wells Grey North", "Columbia North", "Central Selkirks"))
+                                "Wells Gray North", "Columbia North", "Central Selkirks"))
 )
 
 # (-) Assemble figure ####
@@ -3021,13 +3018,13 @@ p1 <- ggplot() +
 # (b) Protist ordination ####
 temp <- bdiv.ordinations.all[[5]][["points"]][[3]]
 temp$Herd <- factor(temp$Herd, levels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                                        "Wells Grey North", "Columbia North", "Central Selkirks",
+                                        "Wells Gray North", "Columbia North", "Central Selkirks",
                                         "Tonquin", "Brazeau", "Revelstoke pen", "LARS"))
 
 temp$GroupHerd <- paste0(temp$Group, temp$Herd)
 temp$GroupHerd <- factor(temp$GroupHerd,
                          levels=c("deep-snowHart Ranges", "deep-snowNorth Cariboo",
-                                  "deep-snowBarkerville", "deep-snowWells Grey North",
+                                  "deep-snowBarkerville", "deep-snowWells Gray North",
                                   "deep-snowColumbia North", "deep-snowCentral Selkirks",
                                   "shallow-snowTonquin", "shallow-snowBrazeau", "Revelstoke penRevelstoke pen",
                                   "LARSLARS"))
@@ -3053,11 +3050,11 @@ p2 <- ggplot(data =  temp, aes(PC1, PC2)) +
                                              brewer.pal(4, "Paired")[c(3:4)], 
                                              "darkorchid1", "gray62"),
                      labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                              "Wells Grey North", "Columbia North", "Central Selkirks",
+                              "Wells Gray North", "Columbia North", "Central Selkirks",
                               "Tonquin", "Brazeau", "Revelstoke pen","LARS")) +
   scale_shape_manual(name="Guide1", values=c(16,16,16,16,16,16,17,17,15,18),
                      labels=c("Hart Ranges", "North Cariboo", "Barkerville",
-                              "Wells Grey North", "Columbia North", "Central Selkirks",
+                              "Wells Gray North", "Columbia North", "Central Selkirks",
                               "Tonquin", "Brazeau", "Revelstoke pen","LARS"))
 
 # (c) Heat map ####
@@ -3083,7 +3080,7 @@ df.prt2 <- reshape2::melt(df.prt2)
 
 df.prt2$Facet <- rep("population")
 df.prt2$Facet[df.prt2$Group %in% c("Barkerville", "Central Selkirks", "Hart Ranges",
-                                   "North Cariboo", "Columbia North", "Wells Grey North")] <- "deep-snow"
+                                   "North Cariboo", "Columbia North", "Wells Gray North")] <- "deep-snow"
 df.prt2$Facet[df.prt2$Group %in% c("Brazeau", "Tonquin")] <- "shallow-snow"
 df.prt2$Facet <- factor(df.prt2$Facet, levels=c(
   "population", "deep-snow", "shallow-snow"
@@ -3091,7 +3088,7 @@ df.prt2$Facet <- factor(df.prt2$Facet, levels=c(
 
 df.prt2$Group <- factor(df.prt2$Group, levels=c(
   "deep-snow", "shallow-snow", "Revelstoke pen", "LARS",
-  "Hart Ranges", "North Cariboo", "Barkerville", "Wells Grey North", "Columbia North", "Central Selkirks",
+  "Hart Ranges", "North Cariboo", "Barkerville", "Wells Gray North", "Columbia North", "Central Selkirks",
   "Tonquin", "Brazeau"
 ))
 
@@ -3153,7 +3150,7 @@ p3 <- ggplot(df.prt2, aes(x=Genus, y=Group, fill=sqrt(mean_color))) +
         strip.text = element_text(size=7),
         axis.text.y = element_text(size=7),
         legend.position="none") +
-  labs(tag="c", x="Genus", y="Population / Herd\n")
+  labs(tag="c", x="Genus", y="Group / Subpopulation\n")
 
 legend <- cowplot::get_legend(
   ggplot(df.prt2, aes(x=Genus, y=Group, fill=sqrt(mean_color))) +
@@ -3175,7 +3172,7 @@ legend <- cowplot::get_legend(
           axis.text.y = element_text(size=7),
           legend.title=element_text(hjust=0.5, size=7),
           legend.position="right") +
-    labs(tag="c", x="Genus", y="Population / Herd\n")
+    labs(tag="c", x="Genus", y="Group / Subpopulation\n")
 )
 
 
@@ -3216,14 +3213,16 @@ df.FITS2 <- reshape2::melt(df.FITS2)
 
 df.FITS2$Facet <- rep("group")
 df.FITS2$Facet[df.FITS2$Group %in% c("Barkerville", "Central Selkirks", "Hart Ranges",
-                                   "North Cariboo", "Columbia North", "Wells Grey North")] <- "deep-snow"
+                                   "North Cariboo", "Columbia North", "Wells Gray North")] <- "deep-snow"
 df.FITS2$Facet[df.FITS2$Group %in% c("Brazeau", "Tonquin")] <- "shallow-snow"
 
 df.FITS2$Group <- factor(df.FITS2$Group, levels=c(
   "deep-snow", "shallow-snow", "Revelstoke pen", "LARS",
-  "Hart Ranges", "North Cariboo", "Barkerville", "Wells Grey North", "Columbia North", "Central Selkirks",
+  "Hart Ranges", "North Cariboo", "Barkerville", "Wells Gray North", "Columbia North", "Central Selkirks",
   "Tonquin", "Brazeau"
 ))
+levels(df.FITS2$Group)[levels(df.FITS2$Group)=="Wells Gray North"] <- "Wells Gray North"
+
 df.FITS2$Facet <- factor(df.FITS2$Facet, levels=c(
   "population", "deep-snow", "shallow-snow"
 ))
@@ -3232,7 +3231,7 @@ df.FITS2$rounded <- as.numeric(df.FITS2$value)
 df.FITS2$rounded[df.FITS2$rounded==0] <- "-"
 df.FITS2$rounded[df.FITS2$rounded != "-"] <- NA
 
-df.FITS2$mean_color <- as.numeric(as.character(df.FITS2$rounded))
+df.FITS2$mean_color <- as.numeric(as.character(df.FITS2$value))
 df.FITS2$mean_color[df.FITS2$mean_color > 50] <- 50
 
 df.FITS2$Genus <- df.FITS2$variable
@@ -3305,7 +3304,7 @@ plot <- ggplot(df.FITS2, aes(x=Group, y=Genus, fill=sqrt(mean_color))) +
         axis.text.y = element_text(size=7),
         legend.title=element_text(hjust=0.5, size=7),
         legend.position="right") +
-  labs(x="Population / Herd", y="Genus")
+  labs(x="Group / Subpopulation", y="Genus")
 
 ggsave("~/caribou/figures/raw_figS16_other_fungi_hetmap.jpg", plot, width=6.5, height=7, units="in", dpi=300)
 

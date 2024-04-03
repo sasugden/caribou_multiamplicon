@@ -102,7 +102,7 @@ pseq.rarefied.sub$algae <- subset_taxa(pseq.rarefied.sub[[2]], Kingdom=="Algae")
 
 # For lichens, create lists of lichenized taxa.
 # This is the list of lichenized fungi curated by Lucking et al. (2016)
-lichenized.fungi <- read.csv("~/caribou/github_publish/lichenized_fungi.csv")
+lichenized.fungi <- read.csv("raw_data/lichenized_fungi.csv")
 
 # Subset FUNGuild identifications to only lichenized fungi.
 lichenized.guild <- subset(fungal.guilds, guild=="Lichenized")
