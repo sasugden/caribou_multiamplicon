@@ -1,0 +1,71 @@
+SampleID,Control,Group,Herd,Year,Month,Day,Sex
+14-4950,sample,Revelstoke pen,Revelstoke pen,2017,Apr,30,F
+15-6402,sample,Revelstoke pen,Revelstoke pen,2017,May,1,F
+17-9724,sample,Revelstoke pen,Revelstoke pen,2017,May,1,NA
+18-13116,sample,deep-snow,North Cariboo,2021,Jan,24,F
+19-3374A,sample,deep-snow,Central Selkirks,2020,Feb,11,F
+19-3375B,sample,deep-snow,Central Selkirks,2020,Feb,11,F
+19-3376A,sample,deep-snow,Central Selkirks,2020,Feb,11,F
+20-1328,sample,deep-snow,North Cariboo,2021,Jan,20,F
+20-1331,sample,deep-snow,North Cariboo,2021,Jan,21,F
+20-1332,sample,deep-snow,Hart Ranges,2021,Jan,24,F
+20-1333,sample,deep-snow,Hart Ranges,2021,Jan,22,F
+20-1334,sample,deep-snow,Hart Ranges,2021,Jan,24,F
+20-1335,sample,deep-snow,North Cariboo,2021,Jan,20,F
+20-1337,sample,deep-snow,Hart Ranges,2021,Jan,22,F
+20-1338,sample,deep-snow,Hart Ranges,2021,Jan,24,F
+20-1339,sample,deep-snow,Hart Ranges,2021,Jan,22,F
+20-1341,sample,deep-snow,Hart Ranges,2021,Jan,22,F
+20-1345,sample,deep-snow,North Columbia,2021,Mar,NA,NA
+20-1346,sample,deep-snow,North Columbia,2021,Mar,NA,NA
+20-1347,sample,deep-snow,North Columbia,2021,Mar,NA,NA
+20-1348,sample,deep-snow,North Columbia,2021,Mar,NA,NA
+20-1351,sample,deep-snow,North Columbia,2021,Mar,NA,NA
+20-1385,sample,deep-snow,Wells Gray North,2021,Mar,15,F
+20-1388,sample,deep-snow,Wells Gray North,2021,Mar,15,F
+20-1390,sample,deep-snow,Wells Gray North,2021,Mar,15,F
+20-1394,sample,deep-snow,Wells Gray North,2021,Mar,17,F
+20-1396,sample,deep-snow,Wells Gray North,2021,Mar,15,F
+20-1425B,sample,deep-snow,Barkerville,2021,Mar,16,F
+20-1434,sample,deep-snow,Barkerville,2021,Mar,16,F
+20-2847,sample,deep-snow,Barkerville,2021,Mar,16,F
+20-2849,sample,deep-snow,Barkerville,2021,Mar,16,F
+20-2852,sample,deep-snow,Barkerville,2021,Mar,16,F
+2020-004,sample,shallow-snow,Tonquin,2020,Oct,15,F
+2020-016,sample,shallow-snow,Brazeau,2020,Oct,18,F
+2020-023,sample,shallow-snow,Tonquin,2020,Oct,15,M
+2020-025,sample,shallow-snow,Tonquin,2020,Oct,15,F
+2020-030,sample,shallow-snow,Tonquin,2020,Oct,15,F
+2020-049,sample,shallow-snow,Tonquin,2020,Oct,15,F
+2020-053,sample,shallow-snow,Brazeau,2020,Oct,18,M
+2020-090,sample,shallow-snow,Tonquin,2020,Oct,15,M
+2020-094,sample,shallow-snow,Tonquin,2020,Oct,15,M
+2020-142,sample,shallow-snow,Brazeau,2020,Oct,18,F
+RD-1701,sample,LARS,LARS,2021,Feb,NA,F
+RD-178,sample,LARS,LARS,2021,Feb,NA,F
+RD-578,sample,LARS,LARS,2021,Feb,NA,F
+RD-607,sample,LARS,LARS,2021,Feb,NA,M
+RD-608,sample,LARS,LARS,2021,Feb,NA,M
+RD-727,sample,LARS,LARS,2021,Feb,NA,F
+RD-733,sample,LARS,LARS,2021,Feb,NA,F
+RD-853,sample,LARS,LARS,2021,Feb,NA,M
+RD-855,sample,LARS,LARS,2021,Feb,NA,F
+RD-979,sample,LARS,LARS,2021,Feb,NA,M
+RD-982,sample,LARS,LARS,2021,Feb,NA,M
+RD-988,sample,LARS,LARS,2021,Feb,NA,M
+RD-991,sample,LARS,LARS,2021,Feb,NA,M
+RP-H,sample,Revelstoke pen,Revelstoke pen,2017,May,13,NA
+RP-I,sample,Revelstoke pen,Revelstoke pen,2017,May,13,NA
+RP-J,sample,Revelstoke pen,Revelstoke pen,2017,May,13,NA
+RP-K,sample,Revelstoke pen,Revelstoke pen,2017,May,13,NA
+RP-L,sample,Revelstoke pen,Revelstoke pen,2017,May,13,NA
+RP-M,sample,Revelstoke pen,Revelstoke pen,2017,May,13,NA
+RP-U,sample,Revelstoke pen,Revelstoke pen,2017,May,1,NA
+RP-V,sample,Revelstoke pen,Revelstoke pen,2017,May,1,NA
+RP-W,sample,Revelstoke pen,Revelstoke pen,2017,May,1,NA
+RP-X,sample,Revelstoke pen,Revelstoke pen,2017,May,1,NA
+RP-Y,sample,Revelstoke pen,Revelstoke pen,2017,May,1,NA
+RP-Z,sample,Revelstoke pen,Revelstoke pen,2017,May,1,NA
+K1-NC,control,NA,NA,NA,NA,NA,NA
+MOCK,control,NA,NA,NA,NA,NA,NA
+NC-K2,control,NA,NA,NA,NA,NA,NA
